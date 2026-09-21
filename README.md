@@ -6,6 +6,18 @@ Status: project preparation; no application code or audio measurements yet. Docu
 
 Project language: English for communication, implementation, UI text, and documentation.
 
+## Repository
+
+GitHub: [Lankow/GuitarTrainer](https://github.com/Lankow/GuitarTrainer) (private).
+The primary branch is `main`; the Git remote is `origin`.
+
+```sh
+git clone https://github.com/Lankow/GuitarTrainer.git
+cd GuitarTrainer
+```
+
+Repository access requires an authorized GitHub account. The repository currently contains project documentation; application setup commands will be added with the prototype.
+
 ## Documentation
 
 - [Product scope](docs/product.md) — requirements, assumptions, and milestones.
