@@ -2,7 +2,7 @@
 
 ## Context
 
-Read README.md and documents relevant to the area being changed before starting work. The project begins with detecting individual guitar notes. Android and iOS are target platforms; web is optional. Proposed architecture does not imply an existing implementation.
+Read README.md and documents relevant to the area being changed before starting work. The current scope is a desktop browser app detecting individual guitar notes. Android and iOS are deferred. Distinguish implemented behavior from future plans.
 
 ## Language
 
@@ -23,7 +23,7 @@ Use English for all communication, documentation, implementation, code identifie
 - Process audio locally; saving and uploading recordings are outside the initial scope.
 - Do not add accounts, a backend, cloud services, or chord recognition unless required by the agreed scope.
 - DSP tests cover reference signals, silence, harmonics, and octave errors; validation with a real guitar is still required.
-- Build/test/lint commands are not defined yet. Add actual commands after choosing the stack and configuring the project.
+- Run npm test and npm run build for relevant changes. npm run typecheck validates types separately. npm run dev starts the desktop app. No dedicated linter is configured yet.
 
 ## Collaboration
 

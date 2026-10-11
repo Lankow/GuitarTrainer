@@ -8,8 +8,12 @@
 # Dependencies and generated output
 node_modules/
 dist/
+dist-android/
 build/
 coverage/
+.expo/
+android/
+ios/
 *.log
 
 # OS files

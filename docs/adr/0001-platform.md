@@ -1,10 +1,12 @@
 # ADR-0001: platform and audio pipeline selection
 
-Date: 2026-09-21. Status: proposed, subject to experimental validation.
+Date: 2026-09-21. Status: historical proposal, superseded for current scope by [ADR-0002](0002-desktop.md). The earlier mobile proposal is retained below as decision history.
 
 ## Context
 
 Android and iOS are required; web is optional. The main risks are access to live microphone samples, detection stability, and latency on real devices.
+
+Available development hardware is a Windows PC and an Android phone. There is no local Mac, and iOS testing/debugging is currently difficult. Recommend an Android-first validation sequence while keeping this platform decision provisional for iOS.
 
 ## Options
 
@@ -23,5 +25,7 @@ A PWA and an application distributed through app stores are different delivery p
 ## Consequences and verification
 
 Parts of the prototype may be replaced. Music logic, test data, and contracts should remain portable. No backend at this stage. Accepting the decision requires results from docs/audio-spike.md and agreement on the target installation method.
+
+Local native iOS builds with Capacitor require macOS and Xcode. Cloud builds can provide build infrastructure but do not replace real-device audio measurements. Delay iOS-specific infrastructure until the Android audio experiment is useful and a physical iPhone testing route is available. See [Capacitor environment setup](https://capacitorjs.com/docs/getting-started/environment-setup).
 
 Sources checked on 2026-09-21: [Capacitor](https://capacitorjs.com/docs), [Expo Audio](https://docs.expo.dev/versions/latest/sdk/audio/), [AudioWorklet](https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet). The comparison is a design recommendation, not a performance guarantee for these tools.
