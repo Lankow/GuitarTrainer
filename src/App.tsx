@@ -1,5 +1,10 @@
-import { useState } from 'react';
-import { describePitch, frequencyFor, STRINGS } from './audio/pitch';
+import { useState, type CSSProperties } from 'react';
+import { ScalePractice } from './practice/ScalePractice';
+import { NotePractice } from './practice/NotePractice';
+import { ProfileForm, useProfile } from './Profile';
+import { TUNINGS } from './audio/tunings';
+import { Settings, usePreferences, themeVariables } from './Settings';
+import { describePitch, frequencyFor } from './audio/pitch';
 import { useDesktopAudio } from './audio/useDesktopAudio';
 
 function Icon({ name, size = 20 }: { name: 'wave' | 'mic' | 'play' | 'stop' | 'book' | 'arrow'; size?: number }) {
@@ -8,31 +13,41 @@ function Icon({ name, size = 20 }: { name: 'wave' | 'mic' | 'play' | 'stop' | 'b
 }
 
 export default function App() {
-  const [device, setDevice] = useState('');
-  const [gate, setGate] = useState(-55);
-  const [reference, setReference] = useState(440);
-  const [demoMidi, setDemoMidi] = useState(40);
+  const [page, setPage] = useState<'studio' | 'settings' | 'practice' | 'scales'>('studio');
+  const [preferences, updatePreferences, saved] = usePreferences();
+  const { device, gate, reference } = preferences;
+  const profile = useProfile();
+  const tuning = TUNINGS.find(t => t.id === preferences.tuning) ?? TUNINGS[0];
+  const strings = tuning.notes.map(midi => { const n = describePitch(frequencyFor(midi)); return { midi, note: n.name, octave: n.octave }; });
+  const [demoString, setDemoString] = useState(0);
+  const demoMidi = tuning.notes[demoString];
   const [help, setHelp] = useState(false);
   const audio = useDesktopAudio(gate, demoMidi, reference);
+  function navigate(next: 'studio' | 'settings' | 'practice' | 'scales') { if (next === 'practice' || next === 'scales') audio.stop(); setPage(next); }
   const active = audio.mode === 'microphone' || audio.mode === 'demo';
   const waiting = audio.mode === 'starting';
   const note = audio.pitch ? describePitch(audio.pitch.frequency, reference) : null;
   const inTune = note !== null && Math.abs(note.cents) <= 5;
   const tuningText = !active ? 'Your next note starts here' : !note ? 'Pluck one string and let it ring' : inTune ? 'Right on pitch' : note.cents < 0 ? 'A little flat · tune up' : 'A little sharp · tune down';
   const wavePath = audio.wave.map((value, i) => `${i ? 'L' : 'M'}${i * 5},${45 - value * 100}`).join(' ');
-  return <div className="app-shell">
+  return <div className="app-shell" style={themeVariables(preferences.color) as CSSProperties}>
+    {!profile.nickname ? <main className="welcome"><section className="panel welcome-card"><div className="eyebrow">GUITARTRAINER · YOUR DAILY PRACTICE SPACE</div><h1>Make yourself at home<span>.</span></h1><p>Create your local profile to begin.</p><ProfileForm onSave={profile.save} /></section></main> : <>
     <aside className="sidebar">
-      <a className="brand" href="#" aria-label="GuitarTrainer home"><span className="brand-icon"><Icon name="wave" /></span><span>guitar<span className="brand-light">trainer</span><small>YOUR DAILY PRACTICE SPACE</small></span></a>
+      <a className="brand" href="#" onClick={() => navigate('studio')} aria-label="GuitarTrainer home"><span className="brand-icon"><Icon name="wave" /></span><span>Guitar<span className="brand-light">Trainer</span><small>YOUR DAILY PRACTICE SPACE</small></span></a>
       <div className="nav-label">WORKSPACE</div>
-      <div className="nav-active"><Icon name="wave" /> Note studio <span>01</span></div>
-      <div className="nav-future"><Icon name="play" /> Note practice <small>SOON</small></div>
-      <div className="nav-future"><Icon name="book" /> Finger exercises <small>SOON</small></div>
-      <div className="sidebar-bottom"><div className="local-dot" /> A little practice, every day.<p>One note at a time.</p><div className="version">DESKTOP PREVIEW <span>v0.1</span></div></div>
+      <nav aria-label="Workspace"><button className={`nav-item ${page === 'studio' ? 'nav-active' : ''}`} aria-current={page === 'studio' ? 'page' : undefined} onClick={() => navigate('studio')}><Icon name="wave" /> Note studio</button>
+      <button className={`nav-item ${page === 'practice' ? 'nav-active' : ''}`} aria-current={page === 'practice' ? 'page' : undefined} onClick={() => navigate('practice')}><Icon name="play" /> Note practice</button></nav>
+      <button className={`nav-item ${page === 'scales' ? 'nav-active' : ''}`} aria-current={page === 'scales' ? 'page' : undefined} onClick={() => navigate('scales')}><Icon name="wave" /> Scale Practice</button>
+      <div className="nav-future"><Icon name="book" /> Spider Walk <small>SOON</small></div>
+      <div className="sidebar-settings"><button className={`nav-item ${page === 'settings' ? 'nav-active' : ''}`} aria-current={page === 'settings' ? 'page' : undefined} onClick={() => navigate('settings')}><span aria-hidden="true">⚙</span> Settings</button></div>
+      <div className="sidebar-bottom"><div className="version">DESKTOP PREVIEW <span>v0.1</span></div></div>
     </aside>
     <main>
-      <header className="topbar"><div>Workspace <span>/</span> <strong>Note studio</strong></div><span className="local-badge"><i /> LOCAL AUDIO</span></header>
-      <section className="page-heading"><div><div className="eyebrow">LISTEN. ADJUST. PLAY.</div><h1>Find your note<span>.</span></h1><p>A space to get in tune with your guitar.</p></div><button className="text-button" onClick={() => setHelp(!help)} aria-expanded={help}><Icon name="book" size={16} /> Quick guide</button></section>
-      {help && <section className="help-panel"><strong>A good place to start</strong><p>Choose your microphone and click Start listening. Allow microphone access, then pluck one string at a time. The meter shows how far the detected note is from its nearest pitch: left is flat, right is sharp. Try demo to test the interface without a microphone.</p><p>Use a clean guitar sound. Chords, distortion, and loud background audio can confuse detection. Audio stops when you switch tabs.</p></section>}
+      <header className="topbar"><div>Workspace <span>/</span> <strong>{page === 'studio' ? 'Note studio' : page === 'practice' ? 'Note practice' : page === 'scales' ? 'Scale Practice' : 'Settings'}</strong></div><span className="local-badge" title="Audio is processed on your device. This badge does not indicate microphone activity."><i aria-hidden="true" /> LOCAL AUDIO</span></header>
+      {profile.warning && <div className="error-panel" role="status">{profile.warning}</div>}
+      {page === 'scales' ? <ScalePractice device={device} gate={gate} reference={reference} /> : page === 'practice' ? <NotePractice device={device} gate={gate} reference={reference} tuningId={tuning.id} /> : page === 'settings' ? <><section className="panel profile-panel"><h2>Your profile</h2><ProfileForm initial={profile.nickname} onSave={profile.save} /></section><Settings preferences={preferences} update={updatePreferences} saved={saved} audio={audio} /></> : <>
+      <section className="page-heading"><div><div className="eyebrow">LISTEN. ADJUST. PLAY.</div><h1>Find your note<span>.</span></h1><p>Welcome back, {profile.nickname}. Let’s get in tune.</p></div><button className="text-button" onClick={() => setHelp(!help)} aria-expanded={help}><Icon name="book" size={16} /> Quick guide</button></section>
+      {help && <section className="help-panel"><strong>A good place to start</strong><p>Choose your microphone in Settings, return to Note studio, and click Start listening. Allow microphone access, then pluck one string at a time. The meter shows how far the detected note is from its nearest pitch: left is flat, right is sharp. Try demo to test the interface without a microphone.</p><p>Use a clean guitar sound. Chords, distortion, and loud background audio can confuse detection. Audio stops when you switch tabs.</p></section>}
       {audio.error && <div className="error-panel" role="alert">{audio.error}</div>}
       <div className="studio-grid">
         <section className="detector panel" aria-label="Live note detector">
@@ -43,13 +58,15 @@ export default function App() {
           <div className="privacy-note">Processed on your device. Never recorded or uploaded.</div>
         </section>
         <aside className="right-column">
-          <section className="panel input-panel"><div className="panel-top"><span><Icon name="mic" size={16} /> AUDIO INPUT</span></div><label htmlFor="microphone">Microphone</label><select id="microphone" value={device} disabled={active || waiting} onChange={e => setDevice(e.target.value)}><option value="">System default</option>{audio.devices.filter(d => d.deviceId !== 'default' && d.deviceId).map((d, i) => <option key={d.deviceId} value={d.deviceId}>{d.label || `Microphone ${i + 1}`}</option>)}</select><div className="level-heading"><span>Input level</span><span>{active ? Math.round(audio.level) : '—'} dBFS</span></div><div className="level-bars" aria-label="Input level">{Array.from({ length: 28 }, (_, i) => <i key={i} className={active && i < (audio.level + 80) / 80 * 28 ? 'lit' : ''} />)}</div><div className="settings-divider" /><label htmlFor="gate" className="range-label">Noise gate <span>{gate} dB</span></label><input id="gate" type="range" min="-70" max="-30" step="1" value={gate} onChange={e => setGate(Number(e.target.value))} /><p className="hint">Raise the gate to ignore quiet background noise.</p><label htmlFor="reference" className="reference-label">Reference pitch<select id="reference" value={reference} onChange={e => setReference(Number(e.target.value))}>{[432, 440, 442].map(hz => <option key={hz} value={hz}>A4 · {hz} Hz</option>)}</select></label></section>
+          <section className="panel studio-settings"><div className="eyebrow">YOUR SETUP</div><h2>Ready when you are.</h2><p>A4 · {reference} Hz<br />Noise gate · {gate} dB</p><button className="text-button" onClick={() => navigate('settings')}>Audio & appearance <Icon name="arrow" size={16} /></button></section>
           <section className="tip-card"><div className="tip-number">01 <span>/ PRACTICE NOTE</span></div><h2>Give each note<br />room to breathe.</h2><p>Pluck a single string, let it ring, and watch the pitch settle.</p><svg className="string-art" viewBox="0 0 240 60" fill="none" aria-hidden="true">{[0, 1, 2, 3, 4, 5].map(i => <path key={i} d={`M0 ${20 + i * 4} Q60 ${-20 + i * 9}, 120 ${20 + i * 4} T240 ${20 + i * 4}`} stroke="currentColor" strokeWidth="0.8" />)}</svg></section>
         </aside>
-        <section className="panel strings-panel"><div className="section-title"><h2>Know your strings</h2><span>STANDARD TUNING · E A D G B E</span></div><div className="strings">{STRINGS.map((s, i) => <div className={`string ${note?.midi === s.midi ? 'matched' : ''}`} key={s.midi}><span className="string-number">{6 - i}<span>{i === 0 ? 'LOW' : i === 5 ? 'HIGH' : 'STRING'}</span></span><div className="string-wire" style={{ height: 1 + (5 - i) * 0.5 }} /><div className="string-note">{s.note}<sub>{s.octave}</sub></div><span className="string-hz">{frequencyFor(s.midi, reference).toFixed(1)} Hz</span>{audio.mode === 'demo' && <button className={`demo-note ${demoMidi === s.midi ? 'selected' : ''}`} onClick={() => setDemoMidi(s.midi)} aria-label={`Demo ${s.note}${s.octave}`}>{demoMidi === s.midi ? 'Selected' : 'Try note'}</button>}</div>)}</div></section>
-        <section className="panel signal-panel"><div className="signal-meta"><div><h2>Your signal</h2><p>{audio.mode === 'demo' ? 'Synthetic waveform' : 'Live microphone waveform'}</p></div><span>{audio.sampleRate ? `${(audio.sampleRate / 1000).toFixed(1)} kHz` : 'NO INPUT'}<small>{active ? `${audio.computationMs.toFixed(1)} ms analysis*` : 'Start a session to see audio'}</small></span></div><svg className="waveform" viewBox="0 0 800 90" preserveAspectRatio="none" aria-label="Audio waveform"><defs><pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse"><path d="M40 0H0V30" fill="none" stroke="#2a3830" strokeWidth="0.5" /></pattern></defs><rect width="800" height="90" fill="url(#grid)" /><path d={wavePath || 'M0 45H800'} fill="none" stroke={active ? '#b9e68b' : '#4a5d50'} strokeWidth="1.7" /></svg></section>
+        <section className="panel strings-panel"><div className="section-title"><h2>Know your strings</h2><label className="tuning-select" htmlFor="tuning">Tuning<select id="tuning" value={tuning.id} onChange={e => updatePreferences({ tuning: e.target.value })}>{TUNINGS.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label></div><div className="strings">{strings.map((s, i) => <div className={`string ${note?.midi === s.midi ? 'matched' : ''}`} key={i}><span className="string-number">{6 - i}<span>{i === 0 ? 'LOW' : i === 5 ? 'HIGH' : 'STRING'}</span></span><div className="string-wire" style={{ height: 1 + (5 - i) * 0.5 }} /><div className="string-note">{s.note}<sub>{s.octave}</sub></div><span className="string-match">{note?.midi === s.midi ? (inTune ? 'In tune' : 'Detected') : '\u00a0'}</span><span className="string-hz">{frequencyFor(s.midi, reference).toFixed(1)} Hz</span>{audio.mode === 'demo' && <button className={`demo-note ${demoMidi === s.midi ? 'selected' : ''}`} onClick={() => setDemoString(i)} aria-label={`Demo ${s.note}${s.octave}`}>{demoMidi === s.midi ? 'Selected' : 'Try note'}</button>}</div>)}</div></section>
+        <section className="panel signal-panel"><div className="signal-meta"><div><h2>Your signal</h2><p>{audio.mode === 'demo' ? 'Synthetic waveform' : 'Live microphone waveform'}</p></div><span>{audio.sampleRate ? `${(audio.sampleRate / 1000).toFixed(1)} kHz` : 'NO INPUT'}<small>{active ? `${audio.computationMs.toFixed(1)} ms analysis*` : 'Start a session to see audio'}</small></span></div><svg className="waveform" viewBox="0 0 800 90" preserveAspectRatio="none" aria-label="Audio waveform"><defs><pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse"><path d="M40 0H0V30" fill="none" stroke="#2a3830" strokeWidth="0.5" /></pattern></defs><rect width="800" height="90" fill="url(#grid)" /><path d={wavePath || 'M0 45H800'} fill="none" stroke={active ? 'var(--accent)' : 'var(--muted)'} strokeWidth="1.7" /></svg></section>
       </div>
+      </>}
       <footer><span><i /> Built for focused practice.</span><span>*Analysis time is computation only, not total audio latency.</span></footer>
     </main>
+    </>}
   </div>;
 }

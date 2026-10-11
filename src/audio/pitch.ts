@@ -22,7 +22,7 @@ export function detectPitch(samples: Float32Array, sampleRate: number, gateDb = 
   const rms = Math.sqrt(energy / samples.length);
   if (rms < 10 ** (gateDb / 20)) return null;
   const minTau = Math.max(2, Math.floor(sampleRate / 1400));
-  const maxTau = Math.min(Math.ceil(sampleRate / 70), Math.floor(samples.length / 2) - 1);
+  const maxTau = Math.min(Math.ceil(sampleRate / 60), Math.floor(samples.length / 2) - 1);
   const window = samples.length - maxTau;
   const difference = new Float32Array(maxTau + 1);
   let total = 0;
@@ -39,7 +39,7 @@ export function detectPitch(samples: Float32Array, sampleRate: number, gateDb = 
     const denominator = 2 * (2 * center - right - left);
     const adjustment = denominator ? (right - left) / denominator : 0;
     const frequency = sampleRate / (tau + Math.max(-1, Math.min(1, adjustment)));
-    if (frequency < 75 || frequency > 1350) return null;
+    if (frequency < 65 || frequency > 1350) return null;
     return { frequency, clarity: Math.max(0, 1 - center), rms };
   }
   return null;

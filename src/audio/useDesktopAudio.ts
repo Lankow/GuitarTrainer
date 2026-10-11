@@ -6,6 +6,7 @@ type Session = { context: AudioContext; source: AudioNode; analyser: AnalyserNod
 export function useDesktopAudio(gate: number, demoMidi: number, reference: number) {
   const [mode, setMode] = useState<Mode>('idle');
   const [error, setError] = useState('');
+  const [capturedAt, setCapturedAt] = useState(0);
   const [pitch, setPitch] = useState<Pitch | null>(null);
   const [level, setLevel] = useState(-100);
   const [wave, setWave] = useState<number[]>([]);
@@ -66,9 +67,10 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
       worker = new Worker(new URL('./pitch.worker.ts', import.meta.url), { type: 'module' });
       const current: Session = { context, source, analyser, worker, stream, oscillator, frame: 0, samples: new Float32Array(4096), pending: false };
       session.current = current;
+      let frameCapturedAt = 0;
       worker.onmessage = event => {
         if (session.current !== current) return;
-        current.pending = false; setPitch(event.data.pitch); setComputationMs(event.data.computationMs);
+        current.pending = false; setCapturedAt(frameCapturedAt); setPitch(event.data.pitch); setComputationMs(event.data.computationMs);
       };
       worker.onerror = () => { if (session.current === current) { stop(); setError('Audio analysis stopped. Please start again.'); } };
       stream?.getAudioTracks().forEach(track => track.addEventListener('ended', () => {
@@ -88,6 +90,8 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
           setWave(Array.from({ length: 160 }, (_, i) => current.samples[i * 8]));
           if (!current.pending) {
             current.pending = true;
+            // Timestamp the oldest sample so pre-target audio cannot score.
+            frameCapturedAt = now - current.samples.length / current.context.sampleRate * 1000;
             const copy = current.samples.slice();
             current.worker.postMessage({ samples: copy, sampleRate: current.context.sampleRate, gate: gateRef.current }, [copy.buffer]);
           }
@@ -115,5 +119,5 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
     void refreshDevices();
     return () => { document.removeEventListener('visibilitychange', hide); navigator.mediaDevices?.removeEventListener('devicechange', refreshDevices); stop(); };
   }, [stop, refreshDevices]);
-  return { mode, error, pitch, level, wave, sampleRate, computationMs, devices, start, stop };
+  return { mode, error, pitch, capturedAt, level, wave, sampleRate, computationMs, devices, start, stop };
 }

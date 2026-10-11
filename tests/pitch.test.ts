@@ -9,7 +9,7 @@ function tone(frequency: number, rate: number, harmonic = false) {
   });
 }
 for (const rate of [44100, 48000]) {
-  for (const midi of [...STRINGS.map(s => s.midi), 69, 76, 88]) {
+  for (const midi of [...STRINGS.map(s => s.midi), 38, 39, 69, 76, 88]) {
     test(`detects MIDI ${midi} at ${rate} Hz within 5 cents`, () => {
       const expected = frequencyFor(midi);
       const actual = detectPitch(tone(expected, rate), rate);
@@ -18,7 +18,7 @@ for (const rate of [44100, 48000]) {
     });
   }
   test(`detects weak fundamental rather than stronger second harmonic at ${rate} Hz`, () => {
-    const expected = frequencyFor(40);
+    const expected = frequencyFor(38, 432);
     const actual = detectPitch(tone(expected, rate, true), rate);
     assert.ok(actual);
     assert.ok(Math.abs(1200 * Math.log2(actual.frequency / expected)) < 5);
