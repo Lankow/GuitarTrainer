@@ -1,3 +1,4 @@
+import { tr } from './i18n';
 import { useState } from 'react';
 const cookieName = 'guitartrainer_nickname';
 function readNickname() {
@@ -23,5 +24,5 @@ export function useProfile() {
 }
 export function ProfileForm({ initial = '', onSave }: { initial?: string; onSave: (name: string) => void }) {
   const [name, setName] = useState(initial);
-  return <form className="profile-form" onSubmit={e => { e.preventDefault(); onSave(name); }}><label htmlFor="nickname">Nickname</label><input id="nickname" autoFocus autoComplete="nickname" value={name} maxLength={30} required onChange={e => setName(e.target.value)} placeholder="What should we call you?" /><p className="hint">Up to 30 characters. Saved in a cookie on this browser for one year.</p><button className="primary-button" disabled={!name.trim()} type="submit">{initial ? 'Save nickname' : 'Start practicing'}</button></form>;
+  return <form className="profile-form" onSubmit={e => { e.preventDefault(); onSave(name); }}><label htmlFor="nickname">{tr("Nickname")}</label><input id="nickname" autoFocus={!initial} autoComplete="nickname" value={name} maxLength={30} required onChange={e => setName(e.target.value)} placeholder={tr("What should we call you?")} /><p className="hint">{tr("Up to 30 characters. Saved in a cookie on this browser for one year.")}</p><button className="primary-button" disabled={!name.trim()} type="submit">{initial ? tr("Save nickname") : tr("Start practicing")}</button></form>;
 }

@@ -13,7 +13,7 @@ npm run dev
 
 Open http://127.0.0.1:5173 in Chrome or Edge. On first launch, enter a nickname; rename it later in Settings. Click **Start listening**, allow microphone access, and pluck one string. Use **Try demo** to exercise the actual detector with an internal synthetic signal, without microphone access or audible playback.
 
-Microphone capture requires localhost or HTTPS. Input device names may appear only after permission is granted. Open **Settings** to configure or test your microphone. Stop the session before changing input. Settings and Note studio share the same audio session. Sessions stop when the tab becomes hidden. No audio recordings are saved or uploaded.
+Microphone capture requires localhost or HTTPS. Input device names may appear only after permission is granted. Open **Settings** to configure or test your microphone. Stop the session before changing input. Settings and Tuning Studio share the same audio session. Sessions stop when the tab becomes hidden. No audio recordings are saved or uploaded.
 
 ## Initial features
 
@@ -21,9 +21,9 @@ Microphone capture requires localhost or HTTPS. Input device names may appear on
 - Tuning meter (within ±5 cents is shown as in tune).
 - Settings screen with microphone selection, input testing, noise gate, and reference pitch.
 - Color wheel, six color presets, custom color picker, and restore-default-orange action.
-- Preferences saved locally in this browser; waveform remains in Note studio.
+- Preferences saved locally in this browser; waveform remains in Tuning Studio.
 - A4 reference options: 432, 440, and 442 Hz.
-- Six tuning presets in Note Studio, matching string highlights, and synthetic demo notes.
+- Six tuning presets in Tuning Studio, matching string highlights, and synthetic demo notes.
 - Orange default theme and a local nickname profile stored in a one-year cookie.
 - Note Practice: configure note count, response time, and break countdown; match displayed notes and retain your high score in a cookie.
 - Permission/error handling and explicit start/stop.
@@ -75,3 +75,11 @@ Open the HTTPS address in Chrome on Android and allow microphone access. Browser
 ## Spider Walk
 
 Open Spider Walk and build ordered pattern blocks with repetition counts. Use presets or the finger-pattern creator; enable Mix patterns by string for independent patterns on all six strings. Choose tuning, starting fret, BPM, optional return and audible metronome. Start scored walk uses the microphone and awards one point for each exact pitch played within its beat; Preview routine needs no microphone and awards no score. A four-beat count-in precedes the exercise. Results show total and per-block scores for the current session only. Routines and custom patterns save locally; use headphones with audible clicks. Pitch cannot verify finger or string choice. Stop or leave the screen to end the routine.
+
+## Export and import
+
+In Settings → Backup & restore, select Export settings to download a JSON backup of preferences, profile, high scores, practice setups and custom Spider Walk patterns. To restore, select Import settings, choose the file, review replacement details, then Replace settings & reload. Export the existing setup first if you want to keep it. Files stay local; microphone permissions and active sessions are not transferred. On another device, check the selected microphone after importing.
+
+## Practice modes and language
+
+The Practice menu includes a standalone Metronome with BPM and beats-per-bar controls. Note Practice and Scale Practice offer Without timing: the app waits for each matching note without a timer. Scale targets can be random or consecutive. Spider Walk offers Manual guide · no audio, with Next/Previous combination buttons. Settings → Language switches between English and Polski and saves the selection. These settings are included in exported backups.

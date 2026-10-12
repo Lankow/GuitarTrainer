@@ -1,0 +1,3 @@
+export type Options = { language:'en'|'pl'; noteMode:'timed'|'free'; scaleMode:'timed'|'free'; spiderMode:'timed'|'manual'; bpm:number; beats:number };
+export const DEFAULT_OPTIONS:Options={language:'en',noteMode:'timed',scaleMode:'timed',spiderMode:'timed',bpm:60,beats:4};
+export function validOptions(v:unknown):v is Options {if(!v||typeof v!=='object')return false;const s=v as Options;return ['en','pl'].includes(s.language)&&['timed','free'].includes(s.noteMode)&&['timed','free'].includes(s.scaleMode)&&['timed','manual'].includes(s.spiderMode)&&Number.isInteger(s.bpm)&&s.bpm>=30&&s.bpm<=240&&Number.isInteger(s.beats)&&s.beats>=1&&s.beats<=12;}

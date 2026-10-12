@@ -46,3 +46,23 @@
 .spider-beats{display:flex;justify-content:center;gap:12px;margin:20px 0}.spider-beats span{border:1px solid var(--border);border-radius:50%;width:34px;height:34px;display:grid;place-items:center}.spider-beats .current,.spider-string .current{background:var(--accent);color:var(--accent-ink);font-weight:700}
 .spider-board{max-width:600px;margin:24px auto;border:1px solid var(--border);border-radius:10px;overflow:hidden}.spider-string{display:grid;grid-template-columns:80px repeat(4,1fr);align-items:center;border-bottom:1px solid var(--border)}.spider-string:last-child{border:0}.spider-string span{padding:12px 4px;font-size:13px}.spider-string span+span{border-left:1px solid var(--border)}.practice-stage progress{width:min(100%,600px);accent-color:var(--accent)}
 .spider-routine{margin-top:24px}.spider-block{border:1px solid var(--border);border-radius:10px;padding:20px;margin:20px 0}.spider-block legend{padding:0 8px;color:var(--accent-text)}.spider-pattern-select{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}.spider-string-patterns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.spider-block-actions{display:flex;gap:18px;flex-wrap:wrap}.spider-creator{border-top:1px solid var(--border);margin-top:26px;padding-top:16px}.spider-finger-buttons{display:flex;gap:12px}.spider-finger-buttons button{min-width:48px}.spider-draft{font-size:22px!important;color:var(--accent-text)!important;min-height:32px}.spider-summary{padding-left:22px;text-align:left}.spider-summary li{padding:12px 0;border-bottom:1px solid var(--border)}.spider-summary span{display:block;color:var(--muted);margin-top:5px}.spider-summary small{display:block;line-height:1.8;margin-top:8px}.spider-block input[type=number]{margin-top:8px}.practice-target small{font-size:28px}.spider-block-actions button:disabled{opacity:.35;cursor:not-allowed}@media(max-width:600px){.spider-string-patterns{grid-template-columns:repeat(2,minmax(0,1fr))}.spider-block{padding:12px}}
+
+.backup-panel{margin-top:24px}.backup-panel input[hidden]{display:none}
+
+.settings-grid + .profile-panel{margin-top:24px}.nav-item>svg{flex-shrink:0}
+/* Compact navigation is a disclosure in the page flow, not a modal overlay. */
+.sidebar-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.workspace-navigation{display:flex;flex-direction:column;flex:1;min-height:0}.mobile-menu-button{display:none}
+.brand-icon{transition:transform .2s ease,background .2s ease,box-shadow .2s ease,border-color .2s ease}.brand:focus-visible .brand-icon{background:var(--tint);border-color:var(--accent);box-shadow:0 0 16px color-mix(in srgb,var(--accent) 25%,transparent)}
+@media(hover:hover){.brand:hover .brand-icon{transform:rotate(-7deg) scale(1.08);background:var(--tint);border-color:var(--accent);box-shadow:0 0 16px color-mix(in srgb,var(--accent) 25%,transparent)}.brand:hover .brand-light{color:var(--accent)}}
+@media(max-width:850px){
+ .sidebar{display:block;position:relative;inset:auto;width:100%;padding:14px 18px;border-right:0;border-bottom:1px solid var(--border)}
+ .sidebar-header{width:100%}.sidebar .brand{display:flex;font-size:18px}.sidebar .brand small{display:none}.sidebar .brand-icon{width:32px;height:36px}
+ .mobile-menu-button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;min-width:44px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--tint);color:var(--accent-text);font-size:12px}
+ .workspace-navigation{display:none;flex:none;padding-top:10px}.menu-open .workspace-navigation{display:flex}.sidebar .nav-label{display:block;margin:8px 10px 12px}.sidebar nav{display:block;width:100%}.sidebar .nav-item{display:flex;width:100%;min-height:48px;margin:0 0 5px;padding:12px;text-align:left}.sidebar .sidebar-settings{margin:8px 0 0;padding:12px 0 0;border-top:1px solid var(--border)}.sidebar .sidebar-bottom{display:none}
+ .topbar{height:58px;gap:10px}.topbar div span{margin:0 7px}
+}
+@media(prefers-reduced-motion:reduce){.brand-icon{transition:none}.brand:hover .brand-icon{transform:none}}
+
+.settings-icon{font-size:24px!important;line-height:1;width:24px;margin-left:0!important}.practice-mode{margin:24px 0;max-width:340px}.spider-beats{flex-wrap:wrap}
+
+.language-panel{margin-top:24px}.language-panel select{max-width:300px}.manual-hint{color:var(--muted)}

@@ -7,7 +7,7 @@ export class Metronome {
   private closed = false;
   async prepare() { await this.context.resume(); }
   originTimestamp() { return performance.now() + (this.origin - this.context.currentTime) * 1000; }
-  async start(bpm: number, beats: number, audible: boolean) {
+  async start(bpm: number, beats: number, audible: boolean, beatsPerBar = 4) {
     await this.context.resume();
     if (this.closed) return;
     if (this.context.state !== 'running') throw new Error('Audio could not start. Try again.');
@@ -18,7 +18,7 @@ export class Metronome {
         if (audible && at >= this.context.currentTime) {
           const oscillator = this.context.createOscillator();
           const gain = this.context.createGain();
-          oscillator.frequency.value = this.next % 4 === 0 ? 1000 : 700;
+          oscillator.frequency.value = this.next % beatsPerBar === 0 ? 1000 : 700;
           gain.gain.setValueAtTime(0.0001, at);
           gain.gain.exponentialRampToValueAtTime(0.12, at + 0.003);
           gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.045);

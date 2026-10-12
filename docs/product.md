@@ -130,3 +130,35 @@ Valid routines and custom patterns save immediately under guitartrainer.spider.v
 Verification for scored routines (2026-10-12): 53 tests, type checking, and production build passed. Browser checks verified custom pattern creation, per-string selection and persistence after reload, plus completion of a two-block, three-repetition preview (72 notes, 24 seconds at 180 BPM) with no score. A microphone session connected and entered count-in. These checks do not validate actual guitar accuracy or mobile acoustic timing.
 
 The browser microphone run also completed with 0/72 points and correct block denominators (24 and 48); no guitar was played for this check. Immediate cancellation of a subsequent startup returned to the editor. Positive pitch scoring is covered by automated engine tests, not a physical guitar test.
+
+## Settings backups
+
+Settings → Backup & restore exports a versioned JSON file containing appearance/audio preferences, nickname, cookie high scores, Note Practice timing/tuning/selected notes, Scale Practice setup, and Spider Walk routines/custom patterns. Note and Scale setup now saves immediately when valid; exporting does not require starting practice. Empty note selections remain empty after reopening.
+
+Import selects a local JSON file, validates all known sections and bounds (maximum 256 KB), then displays a replacement review. Applying replaces the saved app data with the backup, stops audio, and reloads. Cancel leaves data unchanged. Unsupported versions, malformed files and invalid sections are rejected before writes. On storage failure the importer attempts to restore the previous values and reports whether rollback succeeded. Unrelated origin storage is untouched. No file is uploaded. Active sessions, invalid unfinished edits, browser microphone permissions and unsaved session results are excluded. Saved microphone identifiers may not work on another device; select an available input in Settings. Cookie records receive a fresh one-year expiry on restore.
+
+Backup verification (2026-10-12): all 57 automated tests, type checking and production build passed. Browser inspection confirmed the Settings controls. Download-event automation stalled; file download, file-picker selection and full browser reload after restore remain unverified end to end.
+
+## Settings layout and navigation labels
+
+The tuning screen is now named Tuning Studio in navigation, breadcrumbs and help. Sidebar sections use distinct icons: microphone for Tuning Studio, musical notes for Note Practice, C-sharp for Scale Practice, and a hand for Spider Walk. Icons are decorative; text labels remain accessible. Settings shows audio and appearance first, then Your profile, followed by Backup & restore. This changes presentation only, with no persistence or audio behavior changes.
+
+## Compact navigation and logo feedback
+
+At widths up to 850 px, the logo and a top-right Menu button replace the always-visible navigation links. The button expands an in-flow list containing all workspace screens and Settings, with an active-screen indicator. Choosing a screen, clicking outside, or pressing Escape closes it; Escape and selection return focus to the toggle. Hidden links are removed from keyboard navigation. Desktop retains its sidebar. The logo responds to pointer hover with a small tilt, scale and accent glow, and keyboard focus gets the glow. Reduced-motion preferences remove movement. Opening the menu alone does not stop practice audio.
+
+Verification: type checking passed; a 390 × 844 browser viewport confirmed collapsed/expanded navigation, Settings selection, and Escape closure with focus on the menu toggle. Physical phone testing remains pending. Profile editing no longer autofocuses; first-launch nickname entry still does.
+
+## Practice navigation, metronome and timing-free modes
+
+The menu and breadcrumb now say Practice (Ćwiczenia in Polish). Settings has a larger icon. A standalone Metronome offers 30–240 BPM, 1–12 beats per bar, accented first beat, visual beat position and explicit start/stop. Stop before changing tempo/meter. It needs no microphone and closes its audio context on navigation, hidden tab or interruption.
+
+Note Practice and Scale Practice now offer Timed practice / Without timing. Existing timed behavior remains available, including the older consecutive-scale elapsed-time result. Without timing shows one target immediately after microphone readiness, waits indefinitely for the correct pitch class, and advances only on fresh matching audio. Wrong notes do not advance; identical adjacent targets require a release/different note. There is no countdown, response deadline, elapsed-time display or high-score write. Completion shows matched-note count. Scale practice offers random or consecutive ascending root-to-root sequences. Untimed setup is saved independently from timed setup, with note/scale fields in one shared configuration. Leaving or hiding the screen stops capture; switching modes cancels the old session.
+
+Spider Walk adds Manual guide · no audio. It presents one four-finger combination at a time with string, frets, block and repetition. Next/Previous moves by combination; Finish completes the guide. It follows the same block, string and return sequence as scored practice. No microphone, metronome, automatic timer or accuracy score is started. Tempo and audible-click controls are hidden for this mode. Switching screens ends the guide; hiding the tab leaves its manual position available.
+
+## English and Polish
+
+Settings → Language offers English / Polski, saved locally with English as the default. Language changes apply immediately to navigation, controls, help, feedback and accessible labels. The document language attribute follows the selection. Code, documentation, identifiers, note names (international B, not H), profile names and device-provided microphone names are not translated. English strings are the fallback for unexpected external errors. Language and the new practice/metronome options are included in backups, as is untimed setup. Older backup files lacking these optional sections remain accepted and restore defaults for them.
+
+Verification (2026-10-12): all 61 automated tests, TypeScript checking and the production build passed. Automated checks cover untimed matching, translations and older-backup compatibility. Desktop browser checks confirmed Polish survives reload, metronome start/stop controls work, untimed note practice starts directly on a target, untimed scales expose random/consecutive selection, and manual Spider Walk advances by combination. No physical guitar accuracy or Android metronome latency is inferred from these checks. Language is also available during first-launch onboarding.

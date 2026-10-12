@@ -61,3 +61,13 @@ src/practice/spider.ts defines validated setup, pure finger/string/fret sequence
 spiderPatterns.ts provides pattern validation/presets; PatternCreator.tsx and RoutineEditor.tsx own the library and ordered block editor. spiderRoutine.ts validates/migrates configuration, expands blocks/per-string patterns into exact fret targets, and implements pure timestamp-based scoring. spider.ts remains the v1 migration schema and beat-position helper.
 
 SpiderPractice.tsx owns a dedicated useDesktopAudio session, a Metronome, and session score state. It resumes the clock in the start gesture, waits for microphone readiness, then starts count-in. Metronome exposes its origin in performance.now coordinates so capture timestamps and beat windows can be compared. Scoring rejects old or late analysis rather than crediting a later target. The music module has no UI/browser dependency; persistence and capture lifecycle stay at the UI boundary. ADR 0008 supersedes ADR 0007's no-scoring decision.
+
+## Backup boundary
+
+src/backup.ts owns the versioned JSON contract, allowlisted storage/cookie keys, domain validation, export collection and verified restore with rollback through an injected storage adapter. It reuses pure practice validators and does not enumerate unrelated browser storage. src/BackupSettings.tsx owns local file selection/download, replacement review and post-import reload. The App supplies current appearance/audio preferences and nickname so those can be exported even before persistence. Note/Scale setup persists on each valid edit to ensure navigation to Settings preserves the current configuration.
+
+## Untimed practice and localization
+
+FreePractice.tsx owns untimed note/scale capture and setup, reusing the pure ordered-run engine in scales.ts for pitch-class matching and repeated-note release gating. freeSetup.ts validates its independent configuration. Distinct React keys ensure changing between note and scale screens cancels capture and resets runtime state. Manual Spider Walk traverses four-note groups from the existing pure expanded routine without starting an audio clock.
+
+MetronomePractice.tsx uses the existing audio-clock scheduler with configurable accent grouping and indefinite playback. optionsSchema.ts defines language, mode and metronome settings; options.ts exposes a subscribed local store with write-failure reporting. i18n.tsx/translation.ts and polish.ts translate explicit render-time keys without DOM mutation or changes to musical data. App subscribes to language/options changes; document.lang updates alongside rendered text. Backups validate new optional options/untimed sections and pad missing older sections with null before restore.
