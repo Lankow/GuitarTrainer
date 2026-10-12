@@ -102,3 +102,31 @@ Random mode uses the existing countdown/response engine, 1–100 targets, no con
 Consecutive mode shows ascending scale degrees plus the closing root, repeated 1–100 times. There are no per-note deadlines or inter-note delays. The timer starts when the first target appears after microphone setup, and ends when the final correct pitch is detected. Wrong notes do not advance; fresh analysis windows are required for each target. A brief silence or different note must separate the closing root and the next repetition's opening root to prevent double-counting sustained audio. Results show elapsed seconds and completed repetitions. Completion times are displayed, not persisted as best times in this initial version.
 
 Leaving the screen, hiding the tab, or losing microphone input cancels without a completed result. Processing/detection latency contributes to elapsed time; no physical latency guarantee is claimed.
+
+## Spider Walk
+
+Implemented 2026-10-12 in response to the request for an initial Spider Walk with an optional metronome. Initial design choice: guided coordination practice without microphone assessment or accuracy scores. Pitch cannot verify finger placement.
+
+Choose patterns 1-2-3-4, 1-3-2-4, or 1-4-2-3; starting fret 1–17; tempo 30–180 BPM; and 1–20 repetitions. Defaults: fret 5, 60 BPM, three repetitions, return enabled, audible clicks enabled. Fingers always map to consecutive frets. Travel from string 6 to string 1; optional return retraces all 24 positions in reverse, including a repeated turnaround note. One repetition is 24 notes without return or 48 with return.
+
+Four count-in beats precede one note per beat. The screen shows finger, string, fret, beat, repetition, and a six-string fretboard (thin string at top). Muting the metronome preserves automatic visual timing. Results describe the scheduled routine duration excluding count-in and guided completion, not playing accuracy. Setup saves immediately when valid in localStorage. Invalid stored setup falls back to defaults; storage failures show a notice.
+
+Leaving the screen, stopping, hiding the tab, or audio interruption cancels the routine and closes its audio clock. No recording, microphone permission, high score, or performance history is used. Actual speaker timing, mobile behavior, and a real guitar session require hardware validation.
+
+Verification (2026-10-12): production build and all 47 tests passed. Desktop browser checks completed a silent 24-note routine at 180 BPM with an 8-second practice result after count-in, and started the sound-enabled mode. Physical audibility/alignment and Motorola testing remain unverified.
+
+## Scored Spider Walk routines (2026-10-12)
+
+This supersedes the unscored single-pattern behavior above. User-confirmed requirements: change patterns between strings (not hand positions along the neck), schedule different patterns over repetitions, and award points for expected pitches during their beats.
+
+The pattern library has five presets including 2-3-4-1. The creator accepts any permutation of fingers 1–4, each used exactly once, with undo and duplicate prevention. A routine contains 1–8 ordered blocks, each with 1–20 repetitions. Blocks can be added, removed, and reordered before starting. By default a block applies one pattern to all six strings; Mix patterns by string exposes six independent selectors, ordered string 6 to string 1. Blocks switch automatically after their repetitions. For example: block 1 = 1-2-3-4 × 1; block 2 = 2-3-4-1 × 2. The return journey reverses the actual outward positions, including each string's pattern and the turnaround note. The starting fret remains fixed throughout the routine. Editing is locked during playback.
+
+Scored walks connect the microphone before starting the four-beat count-in. Tuning is selectable independently of Note Studio; device, gate, and reference pitch come from Settings. One point per target is awarded for its exact MIDI pitch (including octave), calculated from tuning + fret. This differs from octave-independent Note Practice. Wrong notes can be corrected before the beat deadline. Pre-target frames, stale frames, count-in input, and results arriving after their beat do not score. Adjacent identical targets require a detected release/different pitch within the new beat before matching again. This guards against sustained-note double scoring; it is not a dedicated onset detector.
+
+Green feedback marks a hit; red feedback identifies a missed previous beat. Results show total points, percentage, misses and points by block. Results are session-only; Spider Walk high-score persistence is not implemented. Preview routine keeps the guide/metronome but does not request microphone access or score. Use headphones with audible clicks to reduce microphone pickup. No claim is made that scoring proves a particular finger/string was used, that clicks cannot cause false detections, or that acoustic latency is calibrated.
+
+Valid routines and custom patterns save immediately under guitartrainer.spider.v2 in localStorage. The original v1 setup migrates into one block; the old data is retained. Invalid saved data falls back to defaults. Cancel, hidden tab, navigation, microphone loss or clock interruption stops both capture and clicks without a completed result. Real-guitar and Android scoring validation remain pending.
+
+Verification for scored routines (2026-10-12): 53 tests, type checking, and production build passed. Browser checks verified custom pattern creation, per-string selection and persistence after reload, plus completion of a two-block, three-repetition preview (72 notes, 24 seconds at 180 BPM) with no score. A microphone session connected and entered count-in. These checks do not validate actual guitar accuracy or mobile acoustic timing.
+
+The browser microphone run also completed with 0/72 points and correct block denominators (24 and 48); no guitar was played for this check. Immediate cancellation of a subsequent startup returned to the editor. Positive pitch scoring is covered by automated engine tests, not a physical guitar test.

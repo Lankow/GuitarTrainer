@@ -71,3 +71,7 @@ The Deploy GitHub Pages workflow tests and builds main with the /GuitarTrainer/ 
 The repository was made public with owner approval to enable GitHub Pages. The initial deployment failed because Pages was disabled; enabling the Actions source and retrying deployment succeeded.
 
 Open the HTTPS address in Chrome on Android and allow microphone access. Browser preferences/profile cookies are local to that phone and do not transfer from the PC. This is a browser app, not an Android package; real Motorola G34 / Android 15 testing is still required. Keep the app visible while practicing, since hiding it stops audio.
+
+## Spider Walk
+
+Open Spider Walk and build ordered pattern blocks with repetition counts. Use presets or the finger-pattern creator; enable Mix patterns by string for independent patterns on all six strings. Choose tuning, starting fret, BPM, optional return and audible metronome. Start scored walk uses the microphone and awards one point for each exact pitch played within its beat; Preview routine needs no microphone and awards no score. A four-beat count-in precedes the exercise. Results show total and per-block scores for the current session only. Routines and custom patterns save locally; use headphones with audible clicks. Pitch cannot verify finger or string choice. Stop or leave the screen to end the routine.

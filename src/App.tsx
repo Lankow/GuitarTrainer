@@ -1,3 +1,4 @@
+import { SpiderPractice } from './practice/SpiderPractice';
 import { useState, type CSSProperties } from 'react';
 import { ScalePractice } from './practice/ScalePractice';
 import { NotePractice } from './practice/NotePractice';
@@ -13,7 +14,7 @@ function Icon({ name, size = 20 }: { name: 'wave' | 'mic' | 'play' | 'stop' | 'b
 }
 
 export default function App() {
-  const [page, setPage] = useState<'studio' | 'settings' | 'practice' | 'scales'>('studio');
+  const [page, setPage] = useState<'studio' | 'settings' | 'practice' | 'scales' | 'spider'>('studio');
   const [preferences, updatePreferences, saved] = usePreferences();
   const { device, gate, reference } = preferences;
   const profile = useProfile();
@@ -23,7 +24,7 @@ export default function App() {
   const demoMidi = tuning.notes[demoString];
   const [help, setHelp] = useState(false);
   const audio = useDesktopAudio(gate, demoMidi, reference);
-  function navigate(next: 'studio' | 'settings' | 'practice' | 'scales') { if (next === 'practice' || next === 'scales') audio.stop(); setPage(next); }
+  function navigate(next: 'studio' | 'settings' | 'practice' | 'scales' | 'spider') { if (next === 'practice' || next === 'scales' || next === 'spider') audio.stop(); setPage(next); }
   const active = audio.mode === 'microphone' || audio.mode === 'demo';
   const waiting = audio.mode === 'starting';
   const note = audio.pitch ? describePitch(audio.pitch.frequency, reference) : null;
@@ -38,14 +39,14 @@ export default function App() {
       <nav aria-label="Workspace"><button className={`nav-item ${page === 'studio' ? 'nav-active' : ''}`} aria-current={page === 'studio' ? 'page' : undefined} onClick={() => navigate('studio')}><Icon name="wave" /> Note studio</button>
       <button className={`nav-item ${page === 'practice' ? 'nav-active' : ''}`} aria-current={page === 'practice' ? 'page' : undefined} onClick={() => navigate('practice')}><Icon name="play" /> Note practice</button></nav>
       <button className={`nav-item ${page === 'scales' ? 'nav-active' : ''}`} aria-current={page === 'scales' ? 'page' : undefined} onClick={() => navigate('scales')}><Icon name="wave" /> Scale Practice</button>
-      <div className="nav-future"><Icon name="book" /> Spider Walk <small>SOON</small></div>
+      <button className={`nav-item ${page === 'spider' ? 'nav-active' : ''}`} aria-current={page === 'spider' ? 'page' : undefined} onClick={() => navigate('spider')}><Icon name="book" /> Spider Walk</button>
       <div className="sidebar-settings"><button className={`nav-item ${page === 'settings' ? 'nav-active' : ''}`} aria-current={page === 'settings' ? 'page' : undefined} onClick={() => navigate('settings')}><span aria-hidden="true">⚙</span> Settings</button></div>
       <div className="sidebar-bottom"><div className="version">DESKTOP PREVIEW <span>v0.1</span></div></div>
     </aside>
     <main>
-      <header className="topbar"><div>Workspace <span>/</span> <strong>{page === 'studio' ? 'Note studio' : page === 'practice' ? 'Note practice' : page === 'scales' ? 'Scale Practice' : 'Settings'}</strong></div><span className="local-badge" title="Audio is processed on your device. This badge does not indicate microphone activity."><i aria-hidden="true" /> LOCAL AUDIO</span></header>
+      <header className="topbar"><div>Workspace <span>/</span> <strong>{page === 'studio' ? 'Note studio' : page === 'practice' ? 'Note practice' : page === 'scales' ? 'Scale Practice' : page === 'spider' ? 'Spider Walk' : 'Settings'}</strong></div><span className="local-badge" title="Audio is processed on your device. This badge does not indicate microphone activity."><i aria-hidden="true" /> LOCAL AUDIO</span></header>
       {profile.warning && <div className="error-panel" role="status">{profile.warning}</div>}
-      {page === 'scales' ? <ScalePractice device={device} gate={gate} reference={reference} /> : page === 'practice' ? <NotePractice device={device} gate={gate} reference={reference} tuningId={tuning.id} /> : page === 'settings' ? <><section className="panel profile-panel"><h2>Your profile</h2><ProfileForm initial={profile.nickname} onSave={profile.save} /></section><Settings preferences={preferences} update={updatePreferences} saved={saved} audio={audio} /></> : <>
+      {page === 'spider' ? <SpiderPractice device={device} gate={gate} reference={reference} /> : page === 'scales' ? <ScalePractice device={device} gate={gate} reference={reference} /> : page === 'practice' ? <NotePractice device={device} gate={gate} reference={reference} tuningId={tuning.id} /> : page === 'settings' ? <><section className="panel profile-panel"><h2>Your profile</h2><ProfileForm initial={profile.nickname} onSave={profile.save} /></section><Settings preferences={preferences} update={updatePreferences} saved={saved} audio={audio} /></> : <>
       <section className="page-heading"><div><div className="eyebrow">LISTEN. ADJUST. PLAY.</div><h1>Find your note<span>.</span></h1><p>Welcome back, {profile.nickname}. Let’s get in tune.</p></div><button className="text-button" onClick={() => setHelp(!help)} aria-expanded={help}><Icon name="book" size={16} /> Quick guide</button></section>
       {help && <section className="help-panel"><strong>A good place to start</strong><p>Choose your microphone in Settings, return to Note studio, and click Start listening. Allow microphone access, then pluck one string at a time. The meter shows how far the detected note is from its nearest pitch: left is flat, right is sharp. Try demo to test the interface without a microphone.</p><p>Use a clean guitar sound. Chords, distortion, and loud background audio can confuse detection. Audio stops when you switch tabs.</p></section>}
       {audio.error && <div className="error-panel" role="alert">{audio.error}</div>}

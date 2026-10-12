@@ -51,3 +51,13 @@ Practice engine normalizes MIDI values modulo 12 for matching and sequence dedup
 ScalePractice.tsx owns independent scale configuration, audio lifecycle, and the two-mode UI. Random mode reuses the pure practice engine and score-cookie module. scales.ts defines interval sets, transposition, and a pure ordered-run state machine accepting capture timestamps, with release gating at identical-note repetition boundaries.
 
 GitHub Pages deployment uses a dedicated Actions build with /GuitarTrainer/ as Vite base so scripts and the audio worker load under the project path. Only dist is uploaded. Deployment needs Pages write and OIDC permissions; build has read-only repository access. Local development retains its root base.
+
+## Spider Walk modules
+
+src/practice/spider.ts defines validated setup, pure finger/string/fret sequence generation and beat-to-position calculation. src/practice/SpiderPractice.tsx owns setup persistence, guide UI, and session lifecycle. src/audio/metronome.ts schedules short oscillator clicks against AudioContext time with a 100 ms lookahead and 25 ms scheduling interval. The UI samples the same clock; it does not drive audio scheduling. A silent AudioContext supplies the clock when clicks are disabled. Stop/unmount/hidden-tab cleanup closes the context and clears scheduling; an asynchronous start cannot revive a canceled session. This is scheduling design, not a measured latency guarantee.
+
+### Scored routines
+
+spiderPatterns.ts provides pattern validation/presets; PatternCreator.tsx and RoutineEditor.tsx own the library and ordered block editor. spiderRoutine.ts validates/migrates configuration, expands blocks/per-string patterns into exact fret targets, and implements pure timestamp-based scoring. spider.ts remains the v1 migration schema and beat-position helper.
+
+SpiderPractice.tsx owns a dedicated useDesktopAudio session, a Metronome, and session score state. It resumes the clock in the start gesture, waits for microphone readiness, then starts count-in. Metronome exposes its origin in performance.now coordinates so capture timestamps and beat windows can be compared. Scoring rejects old or late analysis rather than crediting a later target. The music module has no UI/browser dependency; persistence and capture lifecycle stay at the UI boundary. ADR 0008 supersedes ADR 0007's no-scoring decision.
