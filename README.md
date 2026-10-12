@@ -39,7 +39,7 @@ npm run build
 npm run preview
 ```
 
-Build output is in dist. Tests cover DSP and note calculations. GitHub Actions runs the tests and production build; it has not been run remotely for this change.
+Build output is in dist. Tests cover DSP and note calculations. GitHub Actions runs the tests and production build. Desktop checks and the Pages deployment for d9511f0 passed remotely; the published app loaded successfully on 2026-10-12.
 
 ## Documentation
 
@@ -52,7 +52,7 @@ Build output is in dist. Tests cover DSP and note calculations. GitHub Actions r
 - [ADR template](docs/adr/template.md)
 - [Agent instructions](AGENTS.md)
 
-Repository: [Lankow/GuitarTrainer](https://github.com/Lankow/GuitarTrainer), private, main branch.
+Repository: [Lankow/GuitarTrainer](https://github.com/Lankow/GuitarTrainer), public, main branch.
 
 Generated Android/Expo folders left over from the earlier prototype are ignored and are not used by this application. No global Android tools or phone installations were removed.
 
@@ -66,8 +66,8 @@ Choose a root, scale, and mode. Random notes uses timed targets and a cookie-bac
 
 ## GitHub Pages deployment
 
-The Deploy GitHub Pages workflow tests and builds main with the /GuitarTrainer/ asset base, then publishes dist using GitHub Actions. In repository Settings → Pages, select GitHub Actions as the publishing source once Pages is available. The expected address is https://lankow.github.io/GuitarTrainer/; this is not a claim that deployment is live.
+The Deploy GitHub Pages workflow tests and builds main with the /GuitarTrainer/ asset base, then publishes dist using GitHub Actions. Repository Settings → Pages uses GitHub Actions as the publishing source. The app is live at [GuitarTrainer](https://lankow.github.io/GuitarTrainer/), verified on 2026-10-12. Pushes to main automatically deploy after the workflow passes.
 
-At configuration time, GitHub reported that this private repository needs an eligible paid plan or public visibility to enable Pages. Repository visibility has not been changed automatically.
+The repository was made public with owner approval to enable GitHub Pages. The initial deployment failed because Pages was disabled; enabling the Actions source and retrying deployment succeeded.
 
-After deployment, open the HTTPS address in Chrome on Android and allow microphone access. Browser preferences/profile cookies are local to that phone and do not transfer from the PC. This is a browser app, not an Android package; real Motorola G34 / Android 15 testing is still required. Keep the app visible while practicing, since hiding it stops audio.
+Open the HTTPS address in Chrome on Android and allow microphone access. Browser preferences/profile cookies are local to that phone and do not transfer from the PC. This is a browser app, not an Android package; real Motorola G34 / Android 15 testing is still required. Keep the app visible while practicing, since hiding it stops audio.
