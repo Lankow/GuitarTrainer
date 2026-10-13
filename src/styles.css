@@ -66,3 +66,45 @@
 .settings-icon{font-size:24px!important;line-height:1;width:24px;margin-left:0!important}.practice-mode{margin:24px 0;max-width:340px}.spider-beats{flex-wrap:wrap}
 
 .language-panel{margin-top:24px}.language-panel select{max-width:300px}.manual-hint{color:var(--muted)}
+
+.practice-mode{padding:0;border:0;min-width:0;width:100%;margin:0 0 24px}
+.page-heading.practice-heading{padding-bottom:16px}
+.practice-mode legend{padding:0;margin-bottom:10px;font-size:12px;color:var(--muted)}
+.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--background);border:1px solid var(--border);border-radius:12px}
+.mode-option{position:relative;cursor:pointer;min-width:0}
+.mode-option input[type=radio]{position:absolute;width:1px;height:1px;opacity:0;margin:0;padding:0}
+.mode-option span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:10px 12px;border-radius:8px;font-size:12px;color:var(--muted);text-align:center}
+.mode-option:hover span{background:var(--tint)}
+.mode-option input:checked+span{background:var(--accent-text);color:var(--background);font-weight:600}
+.mode-option input:focus-visible+span{outline:2px solid var(--accent-text);outline-offset:3px}
+
+/* Keep labels close to their controls, with more space between field groups. */
+.practice-config{--field-gap:24px;--label-gap:10px}
+.practice-config h2{margin:0 0 10px}
+.practice-config label,.practice-config select{font-size:12px}
+.practice-config select,.practice-config input[type=number]{display:block;width:100%;min-width:0;height:44px;box-sizing:border-box;padding:10px 12px;font-size:13px;line-height:22px;border-radius:6px}
+.settings-grid.free-practice-layout{grid-template-columns:minmax(0,1fr)}
+.microphone-check{margin-top:28px;padding-top:24px;border-top:1px solid var(--border)}
+.microphone-check h3{font-size:16px;margin:0 0 12px}.microphone-check p{font-size:12px;line-height:1.7;color:var(--muted)}
+.microphone-check .text-button{margin-top:16px}
+@media(max-width:850px){.panel.practice-config{padding:22px}}
+.practice-config>label:has(>select),
+.practice-config>label:has(>input[type=number]),
+.spider-block>label:has(>input[type=number]){margin-bottom:var(--field-gap)}
+.practice-config label>select{margin-top:var(--label-gap);margin-bottom:0}
+.practice-config label>input[type=number]{margin-top:var(--label-gap);margin-bottom:0}
+.practice-config>select,.practice-config #practice-advanced>select{margin:var(--label-gap) 0 var(--field-gap)}
+.practice-config>input{margin:var(--label-gap) 0 var(--field-gap)}
+.note-choices{padding:18px;margin-bottom:24px}
+.note-choices legend{padding:0 6px}
+.note-choices>div{margin-top:8px;gap:12px}
+.spider-pattern-select{gap:0;margin-bottom:24px}
+.spider-string-patterns{column-gap:18px;row-gap:0;margin-top:20px}
+.spider-block-actions{margin-top:8px}
+.practice-config .spider-toggle{margin-top:18px;margin-bottom:18px}
+.practice-config .practice-actions{margin-top:24px}
+.settings-grid .input-panel .hint{margin-top:12px;margin-bottom:24px}
+.settings-grid .settings-divider{margin-top:28px;margin-bottom:24px}
+.settings-grid .custom-color{margin-top:24px}
+
+.language-switcher{padding:8px 0}.language-buttons{display:flex;gap:4px}.language-button{display:grid;place-items:center;width:44px;height:44px;padding:7px;border:0;border-radius:6px;background:transparent;color:var(--accent-text)}.language-button svg{display:block;width:30px;height:20px;border-radius:2px;opacity:.65;transition:opacity .18s,box-shadow .18s}.language-button:hover svg,.language-button[aria-pressed=true] svg{opacity:1}.language-button[aria-pressed=true] svg{box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--accent-text)}.language-switcher p{font-size:11px;color:var(--muted)}

@@ -82,4 +82,7 @@ In Settings → Backup & restore, select Export settings to download a JSON back
 
 ## Practice modes and language
 
-The Practice menu includes a standalone Metronome with BPM and beats-per-bar controls. Note Practice and Scale Practice offer Without timing: the app waits for each matching note without a timer. Scale targets can be random or consecutive. Spider Walk offers Manual guide · no audio, with Next/Previous combination buttons. Settings → Language switches between English and Polski and saves the selection. These settings are included in exported backups.
+The Practice menu includes a standalone Metronome with BPM and beats-per-bar controls. Note Practice and Scale Practice offer Without timing: the app waits for each matching note without a timer. Scale targets can be random or consecutive. Spider Walk offers Manual guide · no audio, with Next/Previous combination buttons. Flag buttons beneath Settings in the navigation menu switch between English, Polski and Español and save the selection. On phones, open Menu to find them. These settings are included in exported backups.
+
+## Microphone setup check
+In Settings → Audio & tuning, stop any existing session and select Start microphone check. Keep the strings muted for the three-second noise measurement. Then select Check my guitar and pluck one open string a few times during the six-second detection check. Review the feedback and repeat after adjusting the microphone or noise gate. No settings change automatically and no recordings are saved.

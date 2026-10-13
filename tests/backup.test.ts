@@ -46,3 +46,11 @@ test('older backups accept new optional settings; new backups preserve language 
  const current=collectBackup(store);assert.equal((current.storage['guitartrainer.options.v1'] as {language:string}).language,'pl');
  restoreBackup(current,store);assert.deepEqual(collectBackup(store).storage,current.storage);
 });
+test('Spanish language survives export, parsing and restore',()=>{
+ const {store,values}=fixture();
+ values.set('guitartrainer.options.v1',JSON.stringify({language:'es',noteMode:'timed',scaleMode:'free',spiderMode:'manual',bpm:96,beats:3}));
+ const backup=parseBackup(JSON.stringify(collectBackup(store)));
+ values.delete('guitartrainer.options.v1');
+ restoreBackup(backup,store);
+ assert.equal(JSON.parse(values.get('guitartrainer.options.v1')!).language,'es');
+});

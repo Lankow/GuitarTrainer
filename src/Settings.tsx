@@ -1,3 +1,4 @@
+import { MicrophoneCheck } from './audio/MicrophoneCheck';
 import { tr } from './i18n';
 import { useEffect, useState } from 'react';
 import { TUNINGS } from './audio/tunings';
@@ -56,6 +57,7 @@ export function Settings({ preferences: p, update, saved, audio }: { preferences
         <div className="level-heading"><span>{audio.mode === 'demo' ? tr("Demo level") : tr("Input level")}</span><span>{busy && audio.mode !== 'starting' ? Math.round(audio.level) : '—'} {tr("dBFS")}</span></div><div className="level-bars" aria-label={tr("Input level")}>{Array.from({ length: 28 }, (_, i) => <i key={i} className={busy && i < (audio.level + 80) / 80 * 28 ? 'lit' : ''} />)}</div>
         <div className="settings-divider" /><label htmlFor="gate" className="range-label">{tr("Noise gate")} <span>{p.gate} {tr("dB")}</span></label><input id="gate" type="range" min="-70" max="-30" step="1" value={p.gate} onChange={e => update({ gate: Number(e.target.value) })} /><p className="hint">{tr("Raise the gate to ignore quiet background noise.")}</p>
         <label htmlFor="reference" className="reference-label">{tr("Reference pitch")}<select id="reference" value={p.reference} onChange={e => update({ reference: Number(e.target.value) })}>{[432, 440, 442].map(hz => <option key={hz} value={hz}>{tr("A4 ·")} {hz} {tr("Hz")}</option>)}</select></label>
+        <MicrophoneCheck audio={audio} device={p.device} gate={p.gate} reference={p.reference} />
       </section>
       <section className="panel appearance-panel"><h2>{tr("Appearance")}</h2><p className="settings-description">{tr("Pick a color for your buttons, highlights, and workspace tint.")}</p>
         <div className="color-wheel" role="slider" tabIndex={0} aria-label={tr("Interface color hue")} aria-valuemin={0} aria-valuemax={359} aria-valuenow={Math.round(hue) % 360} aria-valuetext={tr("{0} degrees", Math.round(hue) % 360)} onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); const r = e.currentTarget.getBoundingClientRect(); update({ color: hueColor((Math.atan2(e.clientY - r.top - r.height / 2, e.clientX - r.left - r.width / 2) * 180 / Math.PI + 450) % 360) }); }} onPointerMove={e => { if (!e.currentTarget.hasPointerCapture(e.pointerId)) return; const r = e.currentTarget.getBoundingClientRect(); update({ color: hueColor((Math.atan2(e.clientY - r.top - r.height / 2, e.clientX - r.left - r.width / 2) * 180 / Math.PI + 450) % 360) }); }} onKeyDown={e => { if (['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'Home', 'End'].includes(e.key)) { e.preventDefault(); update({ color: hueColor(e.key === 'Home' ? 0 : e.key === 'End' ? 359 : (hue + (e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 3 : -3) + 360) % 360) }); } }}><div className="wheel-center"><span style={{ background: p.color }} /><small>{tr("YOUR COLOR")}</small></div><span className="wheel-marker" style={{ transform: `rotate(${hue}deg)` }}><i /></span></div>
@@ -63,6 +65,7 @@ export function Settings({ preferences: p, update, saved, audio }: { preferences
         <div className="color-presets">{[['Orange', '#f5a45d'], ['Sage', '#c4e99f'], ['Sky', '#8acbff'], ['Lavender', '#c1a5fa'], ['Rose', '#f5a5c5'], ['Amber', '#f0c070']].map(([name, color]) => <button key={name} aria-label={tr("{0} color", name)} aria-pressed={p.color.toLowerCase() === color} style={{ background: color }} onClick={() => update({ color })} />)}</div>
         <label className="custom-color" htmlFor="custom-color">{tr("Custom color")} <span>{p.color.toUpperCase()}</span><input id="custom-color" type="color" value={p.color} onChange={e => update({ color: e.target.value })} /></label>
         <button className="text-button reset-color" onClick={() => update({ color: defaults.color })}>{tr("Restore default orange")}</button>
+
       </section>
     </div>
   </>;
