@@ -57,7 +57,7 @@ export const polish: Record<string,string> = {
 "Sharps and flats can name the same pitch. When both are enabled, equivalent names share one selection.":"Krzyżyki i bemole mogą oznaczać ten sam dźwięk. Gdy obie opcje są włączone, równoważne nazwy mają wspólne zaznaczenie.",
 
  "Include sharps (C♯, D♯, F♯, G♯, A♯)": "Uwzględnij krzyżyki (C♯, D♯, F♯, G♯, A♯)",
- "Deselect all notes": "Odznacz wszystkie nuty",
+ "Deselect all notes": "Odznacz wszystkie dźwięki",
  "Best score for this note count, timing, selected notes, and reference pitch.": "Najlepszy wynik dla tej liczby nut, czasu, wybranych nut i częstotliwości odniesienia.",
  "Select notes; optionally include sharps or flats. Select at least one note to begin.": "Wybierz nuty; opcjonalnie uwzględnij krzyżyki lub bemole. Wybierz co najmniej jedną nutę, aby rozpocząć.",
 
@@ -271,7 +271,7 @@ export const polish: Record<string,string> = {
   "Build your session": "Zaplanuj ćwiczenie",
   "Advanced": "Zaawansowane",
   "Notes to practice": "Dźwięki do ćwiczenia",
-  "Select all notes": "Wybierz wszystkie dźwięki",
+  "Select all notes": "Zaznacz wszystkie dźwięki",
   "Select at least one note to begin.": "Wybierz co najmniej jeden dźwięk.",
   "Number of notes": "Liczba dźwięków",
   "notes": "dźwięków",

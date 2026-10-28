@@ -1,3 +1,4 @@
+import { GuideIcon } from '../GuideIcon';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { tr } from '../i18n';
 import { useOptions } from '../options';
@@ -57,7 +58,7 @@ export function SpiderPractice({device,gate,reference}:{device:string;gate:numbe
  function save(pattern:SpiderPattern){const exists=setup.patterns.some(p=>p.id===pattern.id);if(!exists&&setup.patterns.length>=24){setMessage('Library limit reached (24 walks).');return;}update({patterns:exists?setup.patterns.map(p=>p.id===pattern.id?pattern:p):[...setup.patterns,pattern],selected:pattern.id});setCreator(null);}
  function importWalks(patterns:SpiderPattern[]){if(setup.patterns.length+patterns.length>24){setMessage('Library limit reached (24 walks).');return false;}const copies=patterns.map(p=>({...p,id:crypto.randomUUID()}));update({patterns:[...setup.patterns,...copies],selected:copies[0].id});return true;}
  return <>
- <section className="page-heading practice-heading"><div><div className="eyebrow">{tr('CONTROL. COORDINATION. CONSISTENCY.')}</div><h1>{tr('Spider walk')}<span>.</span></h1><p>{tr('Your score is the time needed to complete the whole routine. The metronome does not control progression.')}</p></div><button className="text-button" aria-expanded={help} onClick={()=>setHelp(v=>!v)}>{tr('Quick guide')}</button></section>
+ <section className="page-heading practice-heading"><div><div className="eyebrow">{tr('CONTROL. COORDINATION. CONSISTENCY.')}</div><h1>{tr('Spider walk')}<span>.</span></h1><p>{tr('Your score is the time needed to complete the whole routine. The metronome does not control progression.')}</p></div><button className="text-button" aria-expanded={help} onClick={()=>setHelp(v=>!v)}><GuideIcon />{tr('Quick guide')}</button></section>
  {help&&<section className="help-panel"><p>{tr('Create a walk by clicking string and fret positions in order. Add records with repetitions, save, then choose your tuning and start.')}</p><p>{tr('Play the displayed pitch, including its octave, to advance. Wrong notes do not advance. Mute between identical consecutive targets. Time starts when the microphone is ready and ends on the final correct note.')}</p><p>{tr('The metronome is optional and never advances a target. Use headphones to prevent clicks reaching the microphone. Pitch detection cannot verify the finger or string used.')}</p></section>}
  {message&&<p className="help-panel" role="status">{tr(message)}</p>}
  {phase==='setup'&&<>{creator?<SpiderCreator key={creator==='new'?'new':creator.id} initial={creator==='new'?undefined:creator} onSave={save} onCancel={()=>setCreator(null)}/>:<>
