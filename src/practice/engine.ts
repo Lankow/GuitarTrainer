@@ -1,6 +1,6 @@
 export const pitchClass = (midi: number) => ((midi % 12) + 12) % 12;
 export type PracticeConfig = { count: number; responseMs: number; breakMs: number };
-export type Round = { phase: 'break' | 'note' | 'finished'; lastOutcome?: 'success' | 'miss'; index: number; score: number; hit: boolean; startsAt: number; deadline: number };
+export type Round = { phase: 'break' | 'note' | 'finished'; lastOutcome?: 'success' | 'miss'; index: number; score: number; hit: boolean; startsAt: number; deadline: number; hits?: number[]; responses?: number[] };
 export function validConfig(c: PracticeConfig) {
   return Number.isInteger(c.count) && c.count >= 1 && c.count <= 100 && Number.isInteger(c.responseMs) && c.responseMs >= 250 && c.responseMs <= 30000 && Number.isInteger(c.breakMs) && c.breakMs >= 100 && c.breakMs <= 10000;
 }
@@ -16,7 +16,7 @@ export function advance(s: Round, c: PracticeConfig, now: number): Round {
 }
 export function scoreNote(s: Round, target: number, detected: number | null, capturedAt: number, now: number): Round {
   if (s.phase !== 'note' || s.hit || capturedAt <= s.startsAt || capturedAt >= s.deadline || now >= s.deadline || (detected === null || pitchClass(detected) !== pitchClass(target))) return s;
-  return { ...s, hit: true, score: s.score + 1 };
+  return { ...s, hit: true, score: s.score + 1, hits:[...(s.hits??[]),s.index], responses:[...(s.responses??[]),Math.max(0,now-s.startsAt)] };
 }
 export function makeSequence(notes: number[], count: number, random = Math.random) {
   notes = [...new Map(notes.map(n => [pitchClass(n), n])).values()];

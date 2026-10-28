@@ -77,3 +77,15 @@ ModeSwitch.tsx provides the shared presentational mode selector using native rad
 PracticeHeader.tsx owns the persistent Note/Scale heading, mode selection and mode-specific guide outside the exercise components. Switching modes replaces only the exercise body, preserving header and guide state while keeping the existing exercise unmount cleanup.
 
 MicrophoneCheck.tsx orchestrates the guided Settings check through the shared useDesktopAudio capture session, without duplicating capture or DSP. setupCheck.ts is a pure assessment function over numeric level/MIDI samples, tested independently from the UI. The component owns cancellation of sessions it starts, and keeps measurement buffers only in memory.
+
+TempoPresets.tsx owns long-press saving and short-press recall controls. The optional tempoPresets options field validates exactly four bounded integer values; missing legacy values use defaults. MetronomePractice owns stopping/restarting playback on recall.
+
+feedback.ts aggregates immutable completed-session data; SessionFeedback.tsx renders it. Timed Round stores accepted indices and response durations without changing scoring criteria. walkTiming.ts computes variable beat offsets and positions from routine repetition boundaries. Metronome accepts optional explicit beat offsets; Spider Walk uses the same offsets for capture-window scoring and visual position. WalkSetup has an optional validated ladder configuration so old backups remain valid.
+
+MetronomeVolume.tsx shares the options-backed volume control across Settings and Metronome. The scheduler routes click envelopes through one output GainNode, preserving timing and accent envelopes while scaling or muting output. Options validation accepts the absent legacy field or integer percentages from 0 to 100.
+
+NoteSelector shares controls between Timed and Free Note Practice. noteSelection validates and migrates legacy tuning-based selections independently of UI; backups use the same reader. Free setup retains its legacy tuning field only for compatibility.
+
+Spider Walk rework: spiderLibrary.ts owns pure position validation, expansion, legacy migration and portable JSON. SpiderCreator/SpiderFretboard edit records; SpiderFiles handles file review and additive imports. SpiderPractice orchestrates audio lifecycle and the optional independent Metronome. spiderRun.ts advances exact-pitch targets from fresh capture frames, gates identical targets on release and records start/completion timestamps. The library uses guitartrainer.spider.library.v1; backups accept a missing legacy section. Old scorer/timing modules remain for legacy tests/data, but the active screen no longer uses them. See ADR 0012, superseding earlier beat-scoring and manual-mode decisions for Spider Walk.
+
+Spider Walk optional BPM progression derives tempo from the current full-pattern repetition. Metronome.setTempo updates future click spacing without replacing its AudioContext; explicit legacy beat schedules remain supported. SpiderFiles uses a native modal dialog for export selection and focus containment.

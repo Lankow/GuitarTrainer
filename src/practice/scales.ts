@@ -20,3 +20,9 @@ export function acceptOrdered(s:OrderedRun, notes:number[], repetitions:number, 
  const next=s.index+1;
  return {...s,index:next,targetAt:now,completedAt:next===notes.length*repetitions?now:null,releaseRequired:next<notes.length*repetitions && pitchClass(notes[next%notes.length])===pitchClass(target)};
 }
+
+/** One repetition, with a single top note and an optional return to the starting root. */
+export function fullScaleNotes(root: number, id: string, returnToRoot = false): number[] {
+ const notes = scaleNotes(root, id);
+ return [...notes, notes[0] + 12, ...(returnToRoot ? [...notes].reverse() : [])];
+}

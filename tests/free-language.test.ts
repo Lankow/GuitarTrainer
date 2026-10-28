@@ -6,6 +6,19 @@ import { validFree,FREE_DEFAULTS } from '../src/practice/freeSetup.ts';
 import { translate } from '../src/translation.ts';
 import { polish } from '../src/polish.ts';
 import { spanish } from '../src/spanish.ts';
+test('metronome volume accepts old settings and validates saved percentages',()=>{
+ const {metronomeVolume,...legacy}=DEFAULT_OPTIONS;
+ assert.equal(validOptions(legacy),true);
+ for(const volume of [0,50,100])assert.equal(validOptions({...legacy,metronomeVolume:volume}),true);
+ for(const volume of [-1,101,0.5,null,'50'])assert.equal(validOptions({...legacy,metronomeVolume:volume}),false);
+});
+test('tempo slots accept legacy settings and exactly four bounded integer tempos',()=>{
+ const {tempoPresets,...legacy}=DEFAULT_OPTIONS;
+ assert.equal(validOptions(legacy),true);
+ assert.equal(validOptions({...legacy,tempoPresets:[30,80,120,240]}),true);
+ for(const values of [[60],[30,80,120,241],[30,80,120,99.5],null])
+  assert.equal(validOptions({...legacy,tempoPresets:values}),false);
+});
 test('untimed notes wait indefinitely, reject wrong notes and accept any octave',()=>{
  let s=startOrdered(100); s=acceptOrdered(s,[40,40,45],1,41,100000,100001); assert.equal(s.index,0);
  s=acceptOrdered(s,[40,40,45],1,52,100002,100003);assert.equal(s.index,1);

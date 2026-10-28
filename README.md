@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open http://127.0.0.1:5173 in Chrome or Edge. On first launch, enter a nickname; rename it later in Settings. Click **Start listening**, allow microphone access, and pluck one string. Use **Try demo** to exercise the actual detector with an internal synthetic signal, without microphone access or audible playback.
+Open http://127.0.0.1:5173 in Chrome or Edge. On first launch, enter a nickname; rename it later in Settings. Click **Start listening**, allow microphone access, and pluck one string.
 
 Microphone capture requires localhost or HTTPS. Input device names may appear only after permission is granted. Open **Settings** to configure or test your microphone. Stop the session before changing input. Settings and Tuning Studio share the same audio session. Sessions stop when the tab becomes hidden. No audio recordings are saved or uploaded.
 
@@ -23,7 +23,7 @@ Microphone capture requires localhost or HTTPS. Input device names may appear on
 - Color wheel, six color presets, custom color picker, and restore-default-orange action.
 - Preferences saved locally in this browser; waveform remains in Tuning Studio.
 - A4 reference options: 432, 440, and 442 Hz.
-- Six tuning presets in Tuning Studio, matching string highlights, and synthetic demo notes.
+- Six tuning presets in Tuning Studio, matching string highlights.
 - Orange default theme and a local nickname profile stored in a one-year cookie.
 - Note Practice: configure note count, response time, and break countdown; match displayed notes and retain your high score in a cookie.
 - Permission/error handling and explicit start/stop.
@@ -58,7 +58,7 @@ Generated Android/Expo folders left over from the earlier prototype are ignored 
 
 ## Practice a session
 
-Choose your microphone in Settings. In Note Practice, choose a tuning and check the note names you want to practice. Open **Note practice**, set the number of notes and timing, then click **Start practice**. For example, 10 notes / 2000 ms / 1000 ms gives a one-second countdown before each two-second response window. Play the displayed note in any detectable octave. **Preview timing** walks through the sequence without a microphone or saved score. Completed microphone sessions retain the best score for that exact configuration in a one-year cookie. Leaving practice or hiding the tab cancels the session.
+Choose your microphone in Settings. In Note Practice, select natural notes and optionally enable sharps; tuning is not required. Open **Note practice**, set the number of notes and timing, then click **Start practice**. For example, 10 notes / 2000 ms / 1000 ms gives a one-second countdown before each two-second response window. Play the displayed note in any detectable octave. **Preview timing** walks through the sequence without a microphone or saved score. Completed microphone sessions retain the best score for that exact configuration in a one-year cookie. Leaving practice or hiding the tab cancels the session.
 
 ## Scale Practice
 
@@ -74,7 +74,7 @@ Open the HTTPS address in Chrome on Android and allow microphone access. Browser
 
 ## Spider Walk
 
-Open Spider Walk and build ordered pattern blocks with repetition counts. Use presets or the finger-pattern creator; enable Mix patterns by string for independent patterns on all six strings. Choose tuning, starting fret, BPM, optional return and audible metronome. Start scored walk uses the microphone and awards one point for each exact pitch played within its beat; Preview routine needs no microphone and awards no score. A four-beat count-in precedes the exercise. Results show total and per-block scores for the current session only. Routines and custom patterns save locally; use headphones with audible clicks. Pitch cannot verify finger or string choice. Stop or leave the screen to end the routine.
+Open Spider Walk and select a saved pattern or create one in Spider Walk Creator. Choose 1–24 frets, click string/fret positions in playing order, and add records with note counts and repetitions. Each record completes its repetitions before the next begins. Save the walk, choose tuning, and start. The microphone advances only on the correct pitch including octave; the score is total completion time from microphone readiness to the final match. Mute briefly between identical consecutive notes. An optional background metronome follows the saved volume but does not control advancement. Selected walks can be exported or imported as JSON copies. Leaving the screen, hiding the tab or stopping cancels the session. Pitch cannot verify finger or string choice; real-guitar validation remains pending.
 
 ## Export and import
 
@@ -82,7 +82,13 @@ In Settings → Backup & restore, select Export settings to download a JSON back
 
 ## Practice modes and language
 
-The Practice menu includes a standalone Metronome with BPM and beats-per-bar controls. Note Practice and Scale Practice offer Without timing: the app waits for each matching note without a timer. Scale targets can be random or consecutive. Spider Walk offers Manual guide · no audio, with Next/Previous combination buttons. Flag buttons beneath Settings in the navigation menu switch between English, Polski and Español and save the selection. On phones, open Menu to find them. These settings are included in exported backups.
+The Practice menu includes a standalone Metronome with BPM and beats-per-bar controls. Note Practice and Scale Practice offer Without timing: the app waits for each matching note without a timer. Scale targets can be random or consecutive. Spider Walk has one microphone-driven completion-time mode. Flag buttons beneath Settings in the navigation menu switch between English, Polski and Español and save the selection. On phones, open Menu to find them. These settings are included in exported backups.
 
 ## Microphone setup check
 In Settings → Audio & tuning, stop any existing session and select Start microphone check. Keep the strings muted for the three-second noise measurement. Then select Check my guitar and pluck one open string a few times during the six-second detection check. Review the feedback and repeat after adjusting the microphone or noise gate. No settings change automatically and no recordings are saved.
+
+Metronome offers four saved BPM slots. Tap a tempo to recall it; hold for 0.7 seconds to save the current BPM (or hold Space/Enter with keyboard focus). Reset restores the four default slots without changing current tempo or playback. Quick guide explains these gestures. Recalling while playing restarts the beat. Slots are included in settings backups.
+
+Completed sessions include note-by-note feedback; timed notes also show streaks and average response time on correct targets. Spider Walk uses saved explicit position sequences and an optional fixed-tempo background metronome. Earlier beat-scoring, manual mode and tempo ladder controls are superseded.
+
+Adjust Metronome volume in Settings or the Metronome screen. The saved level also applies to Spider Walk clicks; 0% mutes clicks while timing continues.
