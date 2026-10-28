@@ -29,3 +29,6 @@ The initial screen rendered and was visually inspected in the in-app Chromium br
 Proposed quality targets for later hardware validation: 95% of stable reference frames within 10 cents, no confirmed notes in the silence test, and p95 attack-to-stable-display latency ≤150 ms. These targets are unverified and may require a shorter frame, different capture path, or improved stabilization.
 
 No real guitar hardware measurements or iOS/Android validation have been completed for this desktop implementation.
+
+## Fast Spider Walk synthetic checks (2026-10-28)
+The earlier 4096-sample/65 ms submission profile imposes a long window and sparse observations. Spider Walk now uses a scaled 2048-sample short-window profile, a 16 ms eligibility interval and direct detector-result delivery. At 48 kHz, synthetic harmonic-rich sequences with 100 and 125 ms note durations complete through the actual detector and scoring reducer with simulated 60 Hz capture and 2 ms worker delivery. This simulation does not measure actual worker scheduling or browser latency. Low-note harmonic tests include 96 kHz capture with a scaled 4096-sample frame. Physical microphone/amp validation remains required.

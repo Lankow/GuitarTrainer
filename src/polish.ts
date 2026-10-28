@@ -1,4 +1,10 @@
 export const polish: Record<string,string> = {
+"Follow your routine with pitch detection or one fret per metronome beat.":"Ćwicz z wykrywaniem dźwięków lub zmieniaj próg przy każdym uderzeniu metronomu.",
+"Metronome-led practice uses no microphone. Each target lasts one beat, including the last. Duration is not a verified playing score.":"Ćwiczenie z metronomem nie używa mikrofonu. Każdy cel, także ostatni, trwa jedno uderzenie. Czas nie jest zweryfikowanym wynikiem gry.",
+"Follow metronome · no note detection":"Graj z metronomem · bez wykrywania dźwięków",
+"Play one note per beat. Playing is not verified.":"Graj jedną nutę na uderzenie. Gra nie jest weryfikowana.",
+"Routine duration":"Czas ćwiczenia",
+
 "Export walks":"Eksportuj pajączki",
 "Increase BPM after each pattern":"Zwiększaj BPM po każdym wzorze",
 "BPM increase per pattern":"Przyrost BPM na wzór",

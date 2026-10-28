@@ -1,4 +1,10 @@
 export const spanish: Record<string, string> = {
+"Follow your routine with pitch detection or one fret per metronome beat.":"Practica con detección de notas o un traste por pulso del metrónomo.",
+"Metronome-led practice uses no microphone. Each target lasts one beat, including the last. Duration is not a verified playing score.":"La práctica guiada por metrónomo no usa micrófono. Cada objetivo dura un pulso, incluido el último. La duración no verifica la ejecución.",
+"Follow metronome · no note detection":"Seguir metrónomo · sin detección de notas",
+"Play one note per beat. Playing is not verified.":"Toca una nota por pulso. La ejecución no se verifica.",
+"Routine duration":"Duración de la rutina",
+
 "Export walks":"Exportar ejercicios",
 "Increase BPM after each pattern":"Aumentar BPM después de cada patrón",
 "BPM increase per pattern":"Incremento de BPM por patrón",

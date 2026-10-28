@@ -1,9 +1,14 @@
+import { fastFrameSize } from './captureConfig';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { frequencyFor, type Pitch } from './pitch';
 
 type Mode = 'idle' | 'starting' | 'microphone' | 'demo';
 type Session = { context: AudioContext; source: AudioNode; analyser: AnalyserNode; worker: Worker; stream?: MediaStream; oscillator?: OscillatorNode; frame: number; samples: Float32Array<ArrayBuffer>; pending: boolean };
-export function useDesktopAudio(gate: number, demoMidi: number, reference: number) {
+type AudioOptions = { fast?: boolean; onPitch?: (pitch: Pitch | null, capturedAt: number) => void };
+export function useDesktopAudio(gate: number, demoMidi: number, reference: number, options: AudioOptions = {}) {
+  const fast = options.fast ?? false;
+  const onPitchRef = useRef(options.onPitch);
+  onPitchRef.current = options.onPitch;
   const [mode, setMode] = useState<Mode>('idle');
   const [error, setError] = useState('');
   const [capturedAt, setCapturedAt] = useState(0);
@@ -43,7 +48,7 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
     let stream: MediaStream | undefined;
     let worker: Worker | undefined;
     try {
-      context = new AudioContext();
+      context = new AudioContext({ latencyHint: 'interactive' });
       await context.resume();
       if (!demo) {
         if (!navigator.mediaDevices?.getUserMedia) throw new Error('Microphone access requires localhost or HTTPS in a supported browser.');
@@ -51,7 +56,7 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
       }
       if (token !== generation.current) { stream?.getTracks().forEach(t => t.stop()); await context.close(); return; }
       const analyser = context.createAnalyser();
-      analyser.fftSize = 4096;
+      analyser.fftSize = fast ? fastFrameSize(context.sampleRate) : 4096;
       let source: AudioNode;
       let oscillator: OscillatorNode | undefined;
       if (demo) {
@@ -65,12 +70,14 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
       const silent = context.createGain(); silent.gain.value = 0;
       analyser.connect(silent); silent.connect(context.destination);
       worker = new Worker(new URL('./pitch.worker.ts', import.meta.url), { type: 'module' });
-      const current: Session = { context, source, analyser, worker, stream, oscillator, frame: 0, samples: new Float32Array(4096), pending: false };
+      const current: Session = { context, source, analyser, worker, stream, oscillator, frame: 0, samples: new Float32Array(analyser.fftSize), pending: false };
       session.current = current;
       let frameCapturedAt = 0;
       worker.onmessage = event => {
         if (session.current !== current) return;
-        current.pending = false; setCapturedAt(frameCapturedAt); setPitch(event.data.pitch); setComputationMs(event.data.computationMs);
+        current.pending = false;
+        onPitchRef.current?.(event.data.pitch, frameCapturedAt);
+        setCapturedAt(frameCapturedAt); setPitch(event.data.pitch); setComputationMs(event.data.computationMs);
       };
       worker.onerror = () => { if (session.current === current) { stop(); setError('Audio analysis stopped. Please start again.'); } };
       stream?.getAudioTracks().forEach(track => track.addEventListener('ended', () => {
@@ -80,14 +87,18 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
         if (session.current === current && current.context.state === 'suspended') { stop(); setError('Audio was interrupted. Start a new session to continue.'); }
       };
       let last = 0;
+      let lastVisual = 0;
       const tick = (now: number) => {
         if (session.current !== current) return;
-        if (now - last >= 65) {
+        if (now - last >= (fast ? 16 : 65) && !current.pending) {
           last = now;
           analyser.getFloatTimeDomainData(current.samples);
+          if (!fast || now - lastVisual >= 100) {
+          lastVisual = now;
           let sum = 0; for (const value of current.samples) sum += value * value;
           setLevel(Math.max(-100, 20 * Math.log10(Math.sqrt(sum / current.samples.length))));
-          setWave(Array.from({ length: 160 }, (_, i) => current.samples[i * 8]));
+          if (!fast) setWave(Array.from({ length: 160 }, (_, i) => current.samples[i * 8]));
+          }
           if (!current.pending) {
             current.pending = true;
             // Timestamp the oldest sample so pre-target audio cannot score.
@@ -109,7 +120,7 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
       const name = cause instanceof DOMException ? cause.name : '';
       setError(name === 'NotAllowedError' ? 'Microphone access was denied. Allow it in your browser’s site settings, then try again.' : name === 'NotFoundError' ? 'No microphone found. Connect a microphone or try the demo.' : name === 'NotReadableError' ? 'The microphone is unavailable. Close other audio apps and try again.' : cause instanceof Error ? cause.message : 'Could not start audio. Please try again.');
     }
-  }, [stop, demoMidi, reference, refreshDevices]);
+  }, [stop, demoMidi, reference, refreshDevices, fast]);
 
   useEffect(() => { session.current?.oscillator?.frequency.setTargetAtTime(frequencyFor(demoMidi, reference), session.current.context.currentTime, 0.03); }, [demoMidi, reference]);
   useEffect(() => {

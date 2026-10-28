@@ -3,7 +3,7 @@ import { migrateWalk, validWalk, walkSequence } from './spiderRoutine.ts';
 export type FretPosition = { string: number; fret: number };
 export type SpiderRecord = { notes: FretPosition[]; repetitions: number };
 export type SpiderPattern = { id: string; name: string; frets: number; records: SpiderRecord[] };
-export type SpiderLibrary = { patternRepetitions?: number; bpmStep?: number; patterns: SpiderPattern[]; selected: string; tuning: string; bpm: number; audible: boolean };
+export type SpiderLibrary = { advanceBy?: 'pitch'|'beat'; patternRepetitions?: number; bpmStep?: number; patterns: SpiderPattern[]; selected: string; tuning: string; bpm: number; audible: boolean };
 export const SPIDER_LIBRARY_KEY = 'guitartrainer.spider.library.v1';
 const integer = (n: unknown, min: number, max: number): n is number => typeof n === 'number' && Number.isInteger(n) && n >= min && n <= max;
 export function validSpiderPattern(v: unknown): v is SpiderPattern {
@@ -16,7 +16,7 @@ export function validSpiderPattern(v: unknown): v is SpiderPattern {
 export function validSpiderLibrary(v: unknown): v is SpiderLibrary {
  if (!v || typeof v !== 'object') return false;
  const s = v as SpiderLibrary;
- return (s.bpmStep===undefined||integer(s.bpmStep,0,30)) && (s.patternRepetitions===undefined||integer(s.patternRepetitions,1,100)) && Array.isArray(s.patterns) && s.patterns.length <= 24 && s.patterns.every(validSpiderPattern) && new Set(s.patterns.map(p=>p.id)).size === s.patterns.length && (s.patterns.length===0?s.selected==='':s.patterns.some(p=>p.id===s.selected))
+ return (s.advanceBy===undefined||['pitch','beat'].includes(s.advanceBy)) && (s.bpmStep===undefined||integer(s.bpmStep,0,30)) && (s.patternRepetitions===undefined||integer(s.patternRepetitions,1,100)) && Array.isArray(s.patterns) && s.patterns.length <= 24 && s.patterns.every(validSpiderPattern) && new Set(s.patterns.map(p=>p.id)).size === s.patterns.length && (s.patterns.length===0?s.selected==='':s.patterns.some(p=>p.id===s.selected))
   && TUNINGS.some(t=>t.id===s.tuning) && integer(s.bpm,30,240) && typeof s.audible === 'boolean';
 }
 export function expandSpider(pattern: SpiderPattern, tuningId: string) {
