@@ -1,3 +1,4 @@
+import { onAppBackground } from '../platform/background';
 import { SessionFeedback } from './SessionFeedback';
 import { tr } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
@@ -87,9 +88,9 @@ export function NotePractice({ device, gate, reference }: { device: string; gate
     if (running && !preview && audio.mode === 'idle') cancel('Audio stopped. Restart practice when your microphone is ready.');
   }, [running, preview, audio.mode]);
   useEffect(() => {
-    const hide = () => { if (document.hidden) { setRound(null); setWaiting(false); setMessage('Session stopped because the tab was hidden. No high score was saved.'); } };
-    document.addEventListener('visibilitychange', hide);
-    return () => document.removeEventListener('visibilitychange', hide);
+    const hide = () => { setRound(null); setWaiting(false); setMessage('Session stopped because the tab was hidden. No high score was saved.'); };
+    const removeBackground = onAppBackground(hide);
+    return () => removeBackground();
   }, []);
 
   return <>

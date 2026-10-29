@@ -12,8 +12,16 @@ dist-android/
 build/
 coverage/
 .expo/
-android/
-ios/
+/android/
+/ios/
+
+# Android signing material and machine-specific files
+*.jks
+*.keystore
+keystore.properties
+local.properties
+.idea/
+.kotlin/
 *.log
 
 # OS files

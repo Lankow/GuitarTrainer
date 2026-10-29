@@ -1,1 +1,32 @@
-{"name":"guitar-trainer","version":"0.1.0","private":true,"type":"module","scripts":{"dev":"vite --host 127.0.0.1","start":"vite --host 127.0.0.1","build":"tsc --noEmit && vite build","preview":"vite preview --host 127.0.0.1","typecheck":"tsc --noEmit","test":"node --test tests/*.test.ts"},"dependencies":{"react":"19.3.0","react-dom":"19.3.0"},"devDependencies":{"@types/react":"^19.2.2","@types/react-dom":"^19.2.2","@vitejs/plugin-react":"6.1.2","typescript":"~6.0.3","vite":"8.3.4"}}
+{
+  "name": "guitar-trainer",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "start": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.ts",
+    "android:build": "npm run typecheck && vite build --outDir dist-android --base=/",
+    "android:sync": "npm run android:build && cap sync android",
+    "android:open": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "6.1.2",
+    "typescript": "~6.0.3",
+    "vite": "8.3.4"
+  }
+}

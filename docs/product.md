@@ -4,9 +4,13 @@ Updated: 2026-10-11.
 
 ## Current direction
 
-The user requested reverting the previous work and focusing on an initial desktop version. The active Expo implementation has been replaced by a React desktop browser app. On 2026-10-11, the user explicitly confirmed desktop browser delivery for the initial version. Native desktop packaging is not implemented. Android and iOS are deferred.
+Future platform requirement (2026-10-28): the user wants an iOS version eventually. Current Android work must preserve a shared application and isolated platform integrations. The iOS project path is reserved; implementation, device validation and App Store delivery remain future work. See [platform structure](platforms.md).
+
+The user initially requested desktop browser delivery, confirmed on 2026-10-11. On 2026-10-28, the user approved a Capacitor Android prototype reusing the React app, with eventual Google Play publication as the goal. Native desktop packaging is not implemented. iOS remains deferred. See [Android scope and validation](android.md) and [ADR-0014](adr/0014-android-capacitor.md); Android audio performance is unverified.
 
 English remains the language for code, UI, and documentation. Documentation changes accompany implementation.
+
+Android prototype (2026-10-28): native/android/ packages the shared React UI using Capacitor, targeting API 36. Web Audio capture and worker DSP remain unchanged; native microphone permission declarations and native app-background cancellation are implemented. All practice screens and the metronome use the shared background subscription alongside browser visibility handling. No automatic session resume is added. Android automatic app-data backup is disabled; the existing explicit JSON backup flow still needs WebView file-handling validation. This is a debug prototype with template branding, not a published Google Play release. Device audio, permissions, layout and file handling remain unverified; see [Android validation](android.md).
 
 ## Initial version
 
@@ -27,7 +31,7 @@ Standard tuning: E2 A2 D3 G3 B3 E4. Use international names: B natural, not Poli
 2. Improve stabilization and measure end-to-end latency.
 3. Extend note practice beyond open strings.
 4. Add spider sequences and rhythm assessment.
-5. Revisit packaging and mobile platforms after the desktop audio workflow is validated.
+5. Validate the approved Android prototype on physical hardware before preparing store distribution; iOS remains deferred.
 
 Pitch alone cannot verify a finger or uniquely identify a string/fret. The string reference highlights a matching open-string pitch; it does not identify which string the player used.
 
@@ -247,3 +251,5 @@ Metronome-led Spider Walk (2026-10-28): optional Follow metronome bypasses micro
 
 Spider Walk fast detection (2026-10-28): Spider Walk opts into an approximately 43–46 ms frame at 44.1/48 kHz (2048 samples), scaled to a power-of-two frame for higher sample rates to preserve low-note periods. Analysis submissions are eligible every 16 ms rather than 65 ms, still limited by animation frames and one outstanding worker job. Every worker result is delivered directly to the Spider Walk reducer rather than waiting for a React pitch effect. Waveform updates are omitted and level updates limited to 10 Hz in this mode. Other practice capture windows/cadence are unchanged. Exact-pitch, stale-frame and repeated-note release rules remain intact.
 Synthetic coverage includes harmonic-rich notes at 44.1/48/96 kHz, silence, and sequential 100/125 ms notes at 48 kHz. These tests are not hardware latency measurements; real guitar transient noise, room acoustics and browser load can still cause misses. Repeat the same fast routine with the same microphone and clean amp settings to compare behavior.
+
+Android early alpha distribution (2026-10-29): the user requested a downloadable APK in GitHub Releases. Version 0.1.0-alpha.1 is prepared as an explicitly labeled prerelease using debug signing, with source tagged on a dedicated release branch. Existing functionality is unchanged. Physical device/audio validation and production signing remain pending; see docs/releases/v0.1.0-alpha.1.md.

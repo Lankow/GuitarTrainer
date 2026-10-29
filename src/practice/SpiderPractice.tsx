@@ -1,3 +1,4 @@
+import { onAppBackground } from '../platform/background';
 import { spiderBeatSchedule, spiderBeatIndex } from './spiderBeats';
 import { GuideIcon } from '../GuideIcon';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -59,7 +60,7 @@ export function SpiderPractice({device,gate,reference}:{device:string;gate:numbe
  },[phase,run,audio.mode,audio.error]);
  useEffect(()=>{if(phase==='playing'&&!beatMode)clock.current?.setTempo(spiderTempo(setup.bpm,setup.bpmStep,target?.patternRepetition??0));},[phase,target?.patternRepetition,setup.bpm,setup.bpmStep]);
  useEffect(()=>{if(phase!=='playing')return;const timer=setInterval(()=>{if(clock.current&&!clock.current.running()){stop('Session stopped because audio was interrupted.');return;}const t=performance.now();setNow(t);if(beatMode&&clock.current){const elapsed=clock.current.elapsed();setRun(s=>s?{...s,index:elapsed>=schedule.end?sequence.length:spiderBeatIndex(schedule.starts,elapsed),completedAt:elapsed>=schedule.end?s.startedAt+schedule.end*1000:null}:s);}},20);return()=>clearInterval(timer);},[phase]);
- useEffect(()=>{const hide=()=>{if(document.hidden)stop('Session stopped because the tab was hidden.');};document.addEventListener('visibilitychange',hide);return()=>{generation.current++;document.removeEventListener('visibilitychange',hide);clock.current?.stop();clock.current=null;};},[]);
+ useEffect(()=>{const hide=()=>{stop('Session stopped because the tab was hidden.');};const removeBackground=onAppBackground(hide);return()=>{generation.current++;removeBackground();clock.current?.stop();clock.current=null;};},[]);
  function save(pattern:SpiderPattern){const exists=setup.patterns.some(p=>p.id===pattern.id);if(!exists&&setup.patterns.length>=24){setMessage('Library limit reached (24 walks).');return;}update({patterns:exists?setup.patterns.map(p=>p.id===pattern.id?pattern:p):[...setup.patterns,pattern],selected:pattern.id});setCreator(null);}
  function importWalks(patterns:SpiderPattern[]){if(setup.patterns.length+patterns.length>24){setMessage('Library limit reached (24 walks).');return false;}const copies=patterns.map(p=>({...p,id:crypto.randomUUID()}));update({patterns:[...setup.patterns,...copies],selected:copies[0].id});return true;}
  return <>

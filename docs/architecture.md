@@ -1,6 +1,6 @@
-# Desktop architecture
+# Shared application architecture
 
-Updated: 2026-10-11. Desktop browser with Settings and local preferences.
+Updated: 2026-10-28. Shared browser application with Settings, local preferences and a Capacitor Android prototype.
 
 ```mermaid
 flowchart LR
@@ -21,7 +21,15 @@ flowchart LR
 - src/App.tsx owns screen navigation and the shared audio hook, displaying the detector, standard string reference, and clearly labeled demo. src/styles.css provides desktop and narrow-screen layouts.
 - src/audio/level.ts is a retained framework-independent RMS utility, covered by tests.
 
-src/Settings.tsx owns settings UI, validated versioned localStorage preferences, and theme token generation. App passes audio state/actions into Settings so screen navigation does not remount capture. CSS custom properties apply the chosen accent and hue-derived surfaces across both screens. Preferences and best-score summaries persist; no audio or per-note exercise history is stored. Note Practice uses the separate pure state machine described below. Generated Android/Expo build directories are inactive and ignored. package.json and its lockfile contain the desktop dependencies only.
+src/Settings.tsx owns settings UI, validated versioned localStorage preferences, and theme token generation. App passes audio state/actions into Settings so screen navigation does not remount capture. CSS custom properties apply the chosen accent and hue-derived surfaces across both screens. Preferences and best-score summaries persist; no audio or per-note exercise history is stored. Note Practice uses the separate pure state machine described below. The historical root Android/Expo directories remain inactive and ignored. The active native Android shell is native/android/; package.json and its lockfile include the Capacitor runtime, lifecycle plugin and build tools.
+
+## Android boundary (2026-10-28)
+
+The user also requires a future iOS version. [Shared platform structure](platforms.md) defines the repository contract: shared UI/music logic in src/, integrations in src/platform/, Android source in native/android/ and the future iOS project in native/ios/. Capacitor configuration reserves the iOS path only; iOS dependencies, native project and validation are not implemented. Native-specific code must stay outside pure DSP and exercise modules.
+
+capacitor.config.json points to native/android/ and dist-android/. Android builds use a root asset base; browser/Pages builds retain their separate dist/ output. Capacitor bundles the existing React application rather than loading the deployed website. The native manifest declares microphone permissions; Capacitor's WebView handler requests runtime access. Capture still uses useDesktopAudio, Web Audio and worker DSP; the hook name is historical and no native audio adapter is implemented.
+
+src/platform/background.ts combines document visibility with Capacitor App appStateChange events and provides subscription cleanup, including disposal before asynchronous native registration completes. Capture and every practice screen use it to cancel on background without automatic resumption. DSP and exercise state machines remain independent of Capacitor and UI. Native project files and the Gradle wrapper are versioned; copied web assets and generated outputs are ignored. See [Android setup](android.md) for storage boundaries and unverified device behavior.
 
 ## Audio details
 

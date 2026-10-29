@@ -1,0 +1,11 @@
+{
+  "appId": "io.github.lankow.guitartrainer",
+  "appName": "GuitarTrainer",
+  "webDir": "dist-android",
+  "android": {
+    "path": "native/android"
+  },
+  "ios": {
+    "path": "native/ios"
+  }
+}

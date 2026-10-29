@@ -2,7 +2,7 @@
 
 ## Context
 
-Read README.md and documents relevant to the area being changed before starting work. The current scope is a desktop browser app detecting individual guitar notes. Android and iOS are deferred. Distinguish implemented behavior from future plans.
+Read README.md and documents relevant to the area being changed before starting work. The app detects individual guitar notes in a desktop browser; an Android Capacitor prototype is now in scope. Read docs/android.md for Android changes. iOS remains deferred. Distinguish implemented behavior from future plans.
 
 ## Language
 
@@ -18,6 +18,8 @@ Use English for all communication, documentation, implementation, code identifie
 - At task completion, report changes, verification, limitations, and updated documents. If documentation needs no changes, briefly explain why.
 
 ## Implementation
+
+- Preserve the shared browser/Android/future iOS structure in docs/platforms.md. Keep platform integrations separate from pure music/exercise code. The reserved native/ios/ path does not imply implemented iOS support.
 
 - Separate audio capture from pitch detection and exercise logic. Music logic must not depend on the UI or a particular platform.
 - Process audio locally; saving and uploading recordings are outside the initial scope.

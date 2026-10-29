@@ -1,3 +1,4 @@
+import { onAppBackground } from '../platform/background';
 import { SessionFeedback } from './SessionFeedback';
 import { tr } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
@@ -32,7 +33,7 @@ export function ScalePractice({device,gate,reference}:{device:string;gate:number
  useEffect(()=>{if(preview||audio.mode!=='microphone')return;const midi=audio.pitch?describePitch(audio.pitch.frequency,reference).midi:null;const t=performance.now();setRound(s=>s?scoreNote(s,sequence[s.index],midi,audio.capturedAt,t):s);setOrdered(s=>s?acceptOrdered(s,full,setup.repetitions,midi,audio.capturedAt,t):s);},[audio.pitch,audio.capturedAt,audio.mode,preview,reference]);
  useEffect(()=>{if(done&&!saved.current){saved.current=true;if(round&&!preview)setRecord(saveScore(key,round.score));audio.stop();}},[done,round,key,preview,audio.stop]);
  useEffect(()=>{if(running&&!preview&&audio.mode==='idle')cancel();},[running,preview,audio.mode]);
- useEffect(()=>{const hide=()=>{if(document.hidden){setWaiting(false);setRound(null);setOrdered(null);setMessage('Session stopped because the tab was hidden.');}};document.addEventListener('visibilitychange',hide);return()=>document.removeEventListener('visibilitychange',hide);},[]);
+ useEffect(()=>{const hide=()=>{setWaiting(false);setRound(null);setOrdered(null);setMessage('Session stopped because the tab was hidden.');};const removeBackground=onAppBackground(hide);return()=>removeBackground();},[]);
  const outcome=ordered && ordered.index>0 && now-ordered.targetAt<400 ? 'success' : round?.phase==='note'?(round.hit?'success':undefined):round?.lastOutcome;
  return <>
  {audio.error&&<div className="error-panel" role="alert">{tr(audio.error)}</div>}{message&&<div className="help-panel" role="status">{tr(message)}</div>}

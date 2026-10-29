@@ -1,3 +1,4 @@
+import { onAppBackground } from '../platform/background';
 import { SessionFeedback } from './SessionFeedback';
 import { tr } from '../i18n';
 import { FREE_DEFAULTS, validFree, type FreeSetup } from './freeSetup';
@@ -19,7 +20,7 @@ export function FreePractice({kind,device,gate,reference}:{kind:'notes'|'scales'
  useEffect(()=>{if(waiting&&audio.mode==='microphone'){setRun(startOrdered(performance.now()));started.current=true;setWaiting(false);}else if(waiting&&audio.error)setWaiting(false);},[waiting,audio.mode,audio.error]);
  useEffect(()=>{if(!active||audio.mode!=='microphone')return;const midi=audio.pitch?describePitch(audio.pitch.frequency,reference).midi:null;setRun(s=>s?acceptOrdered(s,sequence,1,midi,audio.capturedAt,performance.now()):s);},[audio.pitch,audio.capturedAt,audio.mode,active,sequence,reference]);
  useEffect(()=>{if(completed)audio.stop();else if(active&&started.current&&audio.mode==='idle')cancel();},[completed,active,audio.mode]);
- useEffect(()=>{const hide=()=>{if(document.hidden){cancel();setMessage('Session stopped because the tab was hidden.');}};document.addEventListener('visibilitychange',hide);return()=>document.removeEventListener('visibilitychange',hide);},[]);
+ useEffect(()=>{const hide=()=>{cancel();setMessage('Session stopped because the tab was hidden.');};const removeBackground=onAppBackground(hide);return()=>removeBackground();},[]);
  const name=(midi:number)=>kind==='notes'?selectedNoteName(midi,{sharps:setup.sharps??false,flats:setup.flats}):ROOTS[((midi%12)+12)%12];
  return <>{(audio.error||message)&&<p className="help-panel" role="status">{tr(audio.error||message)}</p>}
  {!active&&!waiting&&!completed&&<div className="settings-grid free-practice-layout"><section className="panel practice-config"><h2>{tr("Practice without timing")}</h2>{kind==='notes'?<NoteSelector selection={readSelection({notes:setup.selected,sharps:setup.sharps,flats:setup.flats})??DEFAULT_SELECTION} onChange={s=>setSetup({...setup,selected:s.notes,sharps:s.sharps,flats:s.flats})}/>:<><label>{tr("Root note")}<select value={setup.root} onChange={e=>setSetup({...setup,root:Number(e.target.value)})}>{ROOTS.map((n,i)=><option key={i} value={i}>{n}</option>)}</select></label><label>{tr("Scale")}<select value={setup.scale} onChange={e=>setSetup({...setup,scale:e.target.value})}>{SCALES.map(s=><option key={s.id} value={s.id}>{tr(s.name)}</option>)}</select></label><label>{tr("Order")}<select value={setup.order} onChange={e=>setSetup({...setup,order:e.target.value as FreeSetup['order']})}><option value="random">{tr("Random notes")}</option><option value="ascending">{tr("Consecutive notes")}</option></select></label></>}

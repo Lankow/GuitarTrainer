@@ -1,6 +1,18 @@
-# GuitarTrainer — desktop preview
+# GuitarTrainer — browser app and Android prototype
 
-A React + TypeScript application for detecting individual guitar notes in a desktop browser. Mobile development is paused. The previous Expo entry points and dependencies have been replaced; this is a browser app, not a Windows installer.
+A React + TypeScript application for detecting individual guitar notes in a desktop browser, with a Capacitor Android prototype sharing the same code. iOS remains deferred. This is not a Windows installer. Android packaging does not establish real-device audio performance.
+
+## Android and repository layout
+
+Future iOS delivery will reuse the same application, with its native project at `native/ios/`. That path is reserved in Capacitor configuration; no iOS project or build exists yet. See the [shared platform structure](docs/platforms.md) for boundaries and future build requirements.
+
+Keep browser and Android development in this repository: shared application code in `src/`, tests in `tests/`, the active Android project in `native/android/`, and documentation in `docs/`. Commit native source, resources, the Gradle wrapper, Capacitor configuration and npm lockfile. Generated web/native builds, APK/AAB files, SDK paths and signing credentials are ignored. Downloadable builds belong in CI artifacts or GitHub Releases when distribution is introduced.
+
+Use Node.js 24, JDK 21, Android Studio and Android SDK 36. After `npm ci`, run `npm run android:sync`, then `npm run android:open`. In PowerShell, build a debug APK with `.\native\android\gradlew.bat -p native/android assembleDebug`. Sync again after shared code changes. See [Android setup, storage policy and device checklist](docs/android.md) and [ADR-0014](docs/adr/0014-android-capacitor.md). Release signing and Google Play publication are not configured yet.
+
+## Android early alpha
+
+The first early alpha is version `0.1.0-alpha.1`, distributed as a debug-signed APK through [GitHub prereleases](https://github.com/Lankow/GuitarTrainer/releases). Read the [installation instructions and limitations](docs/releases/v0.1.0-alpha.1.md). Physical Android/guitar testing is pending; this is not a Google Play release.
 
 ## Run locally
 
@@ -54,7 +66,7 @@ Build output is in dist. Tests cover DSP and note calculations. GitHub Actions r
 
 Repository: [Lankow/GuitarTrainer](https://github.com/Lankow/GuitarTrainer), public, main branch.
 
-Generated Android/Expo folders left over from the earlier prototype are ignored and are not used by this application. No global Android tools or phone installations were removed.
+The root `android/` directory and Expo folders left over from the earlier prototype are ignored and inactive. The new Capacitor Android project is `native/android/`. No global Android tools or phone installations were removed.
 
 ## Practice a session
 
@@ -70,7 +82,7 @@ The Deploy GitHub Pages workflow tests and builds main with the /GuitarTrainer/ 
 
 The repository was made public with owner approval to enable GitHub Pages. The initial deployment failed because Pages was disabled; enabling the Actions source and retrying deployment succeeded.
 
-Open the HTTPS address in Chrome on Android and allow microphone access. Browser preferences/profile cookies are local to that phone and do not transfer from the PC. This is a browser app, not an Android package; real Motorola G34 / Android 15 testing is still required. Keep the app visible while practicing, since hiding it stops audio.
+Open the HTTPS address in Chrome on Android and allow microphone access. Browser preferences/profile cookies are local to that phone and do not transfer from the PC. The website is separate from the new Capacitor Android package and its local data. Real Motorola G34 / Android 15 testing is still required. Keep the app visible while practicing, since backgrounding it stops audio.
 
 ## Spider Walk
 

@@ -1,3 +1,4 @@
+import { onAppBackground } from '../platform/background';
 import { fastFrameSize } from './captureConfig';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { frequencyFor, type Pitch } from './pitch';
@@ -124,11 +125,11 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
 
   useEffect(() => { session.current?.oscillator?.frequency.setTargetAtTime(frequencyFor(demoMidi, reference), session.current.context.currentTime, 0.03); }, [demoMidi, reference]);
   useEffect(() => {
-    const hide = () => { if (document.hidden) stop(); };
-    document.addEventListener('visibilitychange', hide);
+    const hide = () => { stop(); };
+    const removeBackground = onAppBackground(hide);
     navigator.mediaDevices?.addEventListener('devicechange', refreshDevices);
     void refreshDevices();
-    return () => { document.removeEventListener('visibilitychange', hide); navigator.mediaDevices?.removeEventListener('devicechange', refreshDevices); stop(); };
+    return () => { removeBackground(); navigator.mediaDevices?.removeEventListener('devicechange', refreshDevices); stop(); };
   }, [stop, refreshDevices]);
   return { mode, error, pitch, capturedAt, level, wave, sampleRate, computationMs, devices, start, stop };
 }

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GuitarTrainer</string>
+    <string name="title_activity_main">GuitarTrainer</string>
+    <string name="package_name">io.github.lankow.guitartrainer</string>
+    <string name="custom_url_scheme">io.github.lankow.guitartrainer</string>
+</resources>
