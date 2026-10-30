@@ -5,14 +5,15 @@ import { useEffect, useState } from 'react';
 import { TUNINGS } from './audio/tunings';
 import type { useDesktopAudio } from './audio/useDesktopAudio';
 
-type Preferences = { device: string; gate: number; reference: number; color: string; tuning: string };
-const defaults: Preferences = { device: '', gate: -55, reference: 440, color: '#f5a45d', tuning: 'standard' };
+type Preferences = { device: string; gate: number; reference: number; color: string; brightness: number; tuning: string };
+const defaults: Preferences = { device: '', gate: -55, reference: 440, color: '#f5a45d', brightness: 0, tuning: 'standard' };
 const key = 'guitartrainer.preferences.v1';
 export function usePreferences() {
   const [preferences, setPreferences] = useState<Preferences>(() => {
     try {
       const p = JSON.parse(localStorage.getItem(key) || '{}');
       return {
+        brightness: Number.isInteger(p.brightness) && p.brightness >= 0 && p.brightness <= 100 ? p.brightness : defaults.brightness,
         tuning: TUNINGS.some(t => t.id === p.tuning) ? p.tuning : 'standard',
         device: typeof p.device === 'string' ? p.device : defaults.device,
         gate: Number.isInteger(p.gate) && p.gate >= -70 && p.gate <= -30 ? p.gate : defaults.gate,
@@ -38,10 +39,11 @@ function hueColor(hue: number) {
   const rgb = hue < 60 ? [c, x, 0] : hue < 120 ? [x, c, 0] : hue < 180 ? [0, c, x] : hue < 240 ? [0, x, c] : hue < 300 ? [x, 0, c] : [c, 0, x];
   return '#' + rgb.map(v => Math.round((v + 0.26) * 255).toString(16).padStart(2, '0')).join('');
 }
-export function themeVariables(color: string) {
+export function themeVariables(color: string, brightness = 0) {
   const h = hueOf(color);
+  const lift = Math.max(0, Math.min(100, Number.isFinite(brightness) ? brightness : 0)) * .12;
   const luminance = [1, 3, 5].map(i => parseInt(color.slice(i, i + 2), 16) / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4).reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0);
-  return { '--accent': color, '--accent-ink': luminance > .179 ? '#111111' : '#ffffff', '--accent-text': `hsl(${h} 65% 78%)`, '--surface': `hsl(${h} 16% 11%)`, '--background': `hsl(${h} 14% 8%)`, '--border': `hsl(${h} 15% 24%)`, '--tint': `hsl(${h} 22% 18%)`, '--muted': `hsl(${h} 12% 65%)` };
+  return { '--accent': color, '--accent-ink': luminance > .179 ? '#111111' : '#ffffff', '--accent-text': `hsl(${h} 65% 78%)`, '--surface': `hsl(${h} 16% ${11 + lift}%)`, '--background': `hsl(${h} 14% ${8 + lift}%)`, '--border': `hsl(${h} 15% ${24 + lift}%)`, '--tint': `hsl(${h} 22% ${18 + lift}%)`, '--muted': `hsl(${h} 12% ${65 + lift * .75}%)` };
 }
 export function Settings({ preferences: p, update, saved, audio }: { preferences: Preferences; update: (patch: Partial<Preferences>) => void; saved: boolean; audio: ReturnType<typeof useDesktopAudio> }) {
   const busy = audio.mode !== 'idle';
@@ -61,6 +63,9 @@ export function Settings({ preferences: p, update, saved, audio }: { preferences
         <MetronomeVolume /><MicrophoneCheck audio={audio} device={p.device} gate={p.gate} reference={p.reference} />
       </section>
       <section className="panel appearance-panel"><h2>{tr("Appearance")}</h2><p className="settings-description">{tr("Pick a color for your buttons, highlights, and workspace tint.")}</p>
+        <label htmlFor="brightness" className="range-label">{tr("Brightness")} <span>{p.brightness}%</span></label>
+        <input id="brightness" type="range" min="0" max="100" step="1" value={p.brightness} aria-describedby="brightness-hint" onChange={e => update({ brightness: Number(e.target.value) })} />
+        <p id="brightness-hint" className="hint">{tr("Brighten the app background and panels. 0% keeps the original appearance.")}</p>
         <div className="color-wheel" role="slider" tabIndex={0} aria-label={tr("Interface color hue")} aria-valuemin={0} aria-valuemax={359} aria-valuenow={Math.round(hue) % 360} aria-valuetext={tr("{0} degrees", Math.round(hue) % 360)} onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); const r = e.currentTarget.getBoundingClientRect(); update({ color: hueColor((Math.atan2(e.clientY - r.top - r.height / 2, e.clientX - r.left - r.width / 2) * 180 / Math.PI + 450) % 360) }); }} onPointerMove={e => { if (!e.currentTarget.hasPointerCapture(e.pointerId)) return; const r = e.currentTarget.getBoundingClientRect(); update({ color: hueColor((Math.atan2(e.clientY - r.top - r.height / 2, e.clientX - r.left - r.width / 2) * 180 / Math.PI + 450) % 360) }); }} onKeyDown={e => { if (['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'Home', 'End'].includes(e.key)) { e.preventDefault(); update({ color: hueColor(e.key === 'Home' ? 0 : e.key === 'End' ? 359 : (hue + (e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 3 : -3) + 360) % 360) }); } }}><div className="wheel-center"><span style={{ background: p.color }} /><small>{tr("YOUR COLOR")}</small></div><span className="wheel-marker" style={{ transform: `rotate(${hue}deg)` }}><i /></span></div>
         <p className="hint wheel-hint">{tr("Drag around the wheel, or use the arrow keys.")}</p>
         <div className="color-presets">{[['Orange', '#f5a45d'], ['Sage', '#c4e99f'], ['Sky', '#8acbff'], ['Lavender', '#c1a5fa'], ['Rose', '#f5a5c5'], ['Amber', '#f0c070']].map(([name, color]) => <button key={name} aria-label={tr("{0} color", name)} aria-pressed={p.color.toLowerCase() === color} style={{ background: color }} onClick={() => update({ color })} />)}</div>

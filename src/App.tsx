@@ -1,3 +1,4 @@
+import { ChordPractice } from './practice/ChordPractice';
 import { GuideIcon } from './GuideIcon';
 import { PracticeHeader } from './practice/PracticeHeader';
 import { tr, LanguageSettings } from './i18n';
@@ -24,7 +25,7 @@ function Icon({ name, size = 20 }: { name: 'wave' | 'mic' | 'play' | 'stop' | 'b
 export default function App() {
   const [options, updateOptions] = useOptions();
   useEffect(() => { document.documentElement.lang = options.language; }, [options.language]);
-  const [page, setPage] = useState<'studio' | 'settings' | 'practice' | 'scales' | 'spider' | 'metronome'>('studio');
+  const [page, setPage] = useState<'studio' | 'settings' | 'practice' | 'scales' | 'spider' | 'metronome' | 'chords'>('studio');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const sidebar = useRef<HTMLElement>(null);
@@ -44,14 +45,14 @@ export default function App() {
   const demoMidi = tuning.notes[demoString];
   const [help, setHelp] = useState(false);
   const audio = useDesktopAudio(gate, demoMidi, reference);
-  function navigate(next: 'studio' | 'settings' | 'practice' | 'scales' | 'spider' | 'metronome') { if (next === 'practice' || next === 'scales' || next === 'spider' || next === 'metronome') audio.stop(); setPage(next); if (menuOpen) { setMenuOpen(false); menuButton.current?.focus(); } }
+  function navigate(next: 'studio' | 'settings' | 'practice' | 'scales' | 'spider' | 'metronome' | 'chords') { if (next === 'chords' || next === 'practice' || next === 'scales' || next === 'spider' || next === 'metronome') audio.stop(); setPage(next); if (menuOpen) { setMenuOpen(false); menuButton.current?.focus(); } }
   const active = audio.mode === 'microphone' || audio.mode === 'demo';
   const waiting = audio.mode === 'starting';
   const note = audio.pitch ? describePitch(audio.pitch.frequency, reference) : null;
   const inTune = note !== null && Math.abs(note.cents) <= 5;
   const tuningText = !active ? 'Your next note starts here' : !note ? 'Pluck one string and let it ring' : inTune ? 'Right on pitch' : note.cents < 0 ? 'A little flat · tune up' : 'A little sharp · tune down';
   const wavePath = audio.wave.map((value, i) => `${i ? 'L' : 'M'}${i * 5},${45 - value * 100}`).join(' ');
-  return <div className="app-shell" style={themeVariables(preferences.color) as CSSProperties}>
+  return <div className="app-shell" style={themeVariables(preferences.color, preferences.brightness) as CSSProperties}>
     {!profile.nickname ? <main className="welcome"><section className="panel welcome-card"><div className="eyebrow">{tr("GUITARTRAINER · YOUR DAILY PRACTICE SPACE")}</div><h1>{tr("Make yourself at home")}<span>.</span></h1><p>{tr("Create your local profile to begin.")}</p><LanguageSettings /><ProfileForm onSave={profile.save} /></section></main> : <>
     <aside ref={sidebar} className={`sidebar ${menuOpen ? 'menu-open' : ''}`}><div className="sidebar-header">
       <a className="brand" href="#" onClick={() => navigate('studio')} aria-label={tr("GuitarTrainer home")}><span className="brand-icon"><Icon name="wave" /></span><span>{tr("Guitar")}<span className="brand-light">{tr("Trainer")}</span><small>{tr("YOUR DAILY PRACTICE SPACE")}</small></span></a>
@@ -59,16 +60,17 @@ export default function App() {
       <div id="workspace-navigation" className="workspace-navigation"><div className="nav-label">{tr("PRACTICE")}</div>
       <nav aria-label={tr("Practice")}><button className={`nav-item ${page === 'studio' ? 'nav-active' : ''}`} aria-current={page === 'studio' ? 'page' : undefined} onClick={() => navigate('studio')}><Icon name="mic" />{tr("Tuning Studio")}</button>
       <button className={`nav-item ${page === 'practice' ? 'nav-active' : ''}`} aria-current={page === 'practice' ? 'page' : undefined} onClick={() => navigate('practice')}><Icon name="note" />{tr("Note practice")}</button></nav>
+      <button className={`nav-item ${page === 'chords' ? 'nav-active' : ''}`} aria-current={page === 'chords' ? 'page' : undefined} onClick={() => navigate('chords')}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M5 4v16M12 4v16M19 4v16M5 7h14M5 12h14M5 17h14"/><circle cx="5" cy="9" r="2" fill="currentColor"/><circle cx="12" cy="14" r="2" fill="currentColor"/></svg>{tr('Chord Practice')}</button>
       <button className={`nav-item ${page === 'scales' ? 'nav-active' : ''}`} aria-current={page === 'scales' ? 'page' : undefined} onClick={() => navigate('scales')}><Icon name="scale" />{tr("Scale Practice")}</button>
       <button className={`nav-item ${page === 'spider' ? 'nav-active' : ''}`} aria-current={page === 'spider' ? 'page' : undefined} onClick={() => navigate('spider')}><Icon name="hand" />{tr("Spider Walk")}</button>
       <button className={`nav-item ${page === 'metronome' ? 'nav-active' : ''}`} aria-current={page === 'metronome' ? 'page' : undefined} onClick={() => navigate('metronome')}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M8 3h8l4 18H4L8 3ZM12 17l6-11M8 17h8"/></svg>{tr("Metronome")}</button><div className="sidebar-settings"><button className={`nav-item ${page === 'settings' ? 'nav-active' : ''}`} aria-current={page === 'settings' ? 'page' : undefined} onClick={() => navigate('settings')}><span className="settings-icon" aria-hidden="true">⚙</span>{tr("Settings")}</button><LanguageSettings /></div>
       </div><div className="sidebar-bottom"><div className="version">{tr("DESKTOP PREVIEW")} <span>{tr("v0.1")}</span></div></div>
     </aside>
     <main>
-      <header className="topbar"><div>{tr("Practice")} <span>/</span> <strong>{page === 'studio' ? tr("Tuning Studio") : page === 'practice' ? tr("Note practice") : page === 'scales' ? tr("Scale Practice") : page === 'spider' ? tr("Spider Walk") : page === 'metronome' ? tr("Metronome") : tr("Settings")}</strong></div><span className="local-badge" title={tr("Audio is processed on your device. This badge does not indicate microphone activity.")}><i aria-hidden="true" />{tr("LOCAL AUDIO")}</span></header>
+      <header className="topbar"><div>{tr("Practice")} <span>/</span> <strong>{page === 'chords' ? tr('Chord Practice') : page === 'studio' ? tr("Tuning Studio") : page === 'practice' ? tr("Note practice") : page === 'scales' ? tr("Scale Practice") : page === 'spider' ? tr("Spider Walk") : page === 'metronome' ? tr("Metronome") : tr("Settings")}</strong></div><span className="local-badge" title={tr("Audio is processed on your device. This badge does not indicate microphone activity.")}><i aria-hidden="true" />{tr("LOCAL AUDIO")}</span></header>
       {profile.warning && <div className="error-panel" role="status">{tr(profile.warning)}</div>}
       {(page === 'practice' || page === 'scales') && <PracticeHeader key={`header-${page}`} kind={page === 'practice' ? 'notes' : 'scales'} />}
-      {page === 'metronome' ? <MetronomePractice /> : page === 'practice' && options.noteMode === 'free' ? <FreePractice key="notes" kind="notes" device={device} gate={gate} reference={reference} /> : page === 'scales' && options.scaleMode === 'free' ? <FreePractice key="scales" kind="scales" device={device} gate={gate} reference={reference} /> : page === 'spider' ? <SpiderPractice device={device} gate={gate} reference={reference} /> : page === 'scales' ? <ScalePractice device={device} gate={gate} reference={reference} /> : page === 'practice' ? <NotePractice device={device} gate={gate} reference={reference} /> : page === 'settings' ? <><Settings preferences={preferences} update={updatePreferences} saved={saved} audio={audio} /><section className="panel profile-panel"><h2>{tr("Your profile")}</h2><ProfileForm initial={profile.nickname} onSave={profile.save} /></section><BackupSettings stopAudio={audio.stop} preferences={preferences} nickname={profile.nickname} /></> : <>
+      {page === 'chords' ? <ChordPractice device={device} gate={gate} reference={reference}/> : page === 'metronome' ? <MetronomePractice /> : page === 'practice' && options.noteMode === 'free' ? <FreePractice key="notes" kind="notes" device={device} gate={gate} reference={reference} /> : page === 'scales' && options.scaleMode === 'free' ? <FreePractice key="scales" kind="scales" device={device} gate={gate} reference={reference} /> : page === 'spider' ? <SpiderPractice device={device} gate={gate} reference={reference} /> : page === 'scales' ? <ScalePractice device={device} gate={gate} reference={reference} /> : page === 'practice' ? <NotePractice device={device} gate={gate} reference={reference} /> : page === 'settings' ? <><Settings preferences={preferences} update={updatePreferences} saved={saved} audio={audio} /><section className="panel profile-panel"><h2>{tr("Your profile")}</h2><ProfileForm initial={profile.nickname} onSave={profile.save} /></section><BackupSettings stopAudio={audio.stop} preferences={preferences} nickname={profile.nickname} /></> : <>
       <section className="page-heading"><div><div className="eyebrow">{tr("LISTEN. ADJUST. PLAY.")}</div><h1>{tr("Find your note")}<span>.</span></h1><p>{tr("Welcome back,")} {profile.nickname} {tr(". Let’s get in tune.")}</p></div><button className="text-button" onClick={() => setHelp(!help)} aria-expanded={help}><GuideIcon />{tr("Quick guide")}</button></section>
       {help && <section className="help-panel"><strong>{tr("A good place to start")}</strong><p>{tr("Choose your microphone in Settings, return to Tuning Studio, and click Start listening. Allow microphone access, then pluck one string at a time. The meter shows how far the detected note is from its nearest pitch: left is flat, right is sharp.")}</p><p>{tr("Use a clean guitar sound. Chords, distortion, and loud background audio can confuse detection. Audio stops when you switch tabs.")}</p></section>}
       {audio.error && <div className="error-panel" role="alert">{tr(audio.error)}</div>}

@@ -40,7 +40,7 @@ Microphone capture requires localhost or HTTPS. Input device names may appear on
 - Note Practice: configure note count, response time, and break countdown; match displayed notes and retain your high score in a cookie.
 - Permission/error handling and explicit start/stop.
 
-Single notes only. Chords and finger placement are not recognized. Real-guitar accuracy and end-to-end latency still require physical testing.
+Tuning/Note/Scale/Spider detection remains single-note. Chord Practice separately offers experimental recognition of 16 supported chords; finger placement is not verified. Real-guitar accuracy and end-to-end latency still require physical testing.
 
 ## Checks
 
@@ -104,3 +104,6 @@ Metronome offers four saved BPM slots. Tap a tempo to recall it; hold for 0.7 se
 Completed sessions include note-by-note feedback; timed notes also show streaks and average response time on correct targets. Spider Walk uses saved explicit position sequences and an optional fixed-tempo background metronome. Earlier beat-scoring, manual mode and tempo ladder controls are superseded.
 
 Adjust Metronome volume in Settings or the Metronome screen. The saved level also applies to Spider Walk clicks; 0% mutes clicks while timing continues.
+
+## Chord Practice (experimental)
+Open Chord Practice, create a named set using chord tiles, choose Timed or Free mode, and start with your microphone. Strum the displayed standard-tuning shape with a clean sound and let all tones ring. Timed sessions use response/break durations and a recognition high score; Free waits for a match. Mute between repeated chords. Settings/backups retain sets and setup. Real-guitar accuracy and Android device behavior remain unvalidated; unsupported chord types and custom voicings are not offered.

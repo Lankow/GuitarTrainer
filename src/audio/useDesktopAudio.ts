@@ -1,3 +1,4 @@
+import type { ChordDetection } from './chordDetection';
 import { onAppBackground } from '../platform/background';
 import { fastFrameSize } from './captureConfig';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -5,8 +6,11 @@ import { frequencyFor, type Pitch } from './pitch';
 
 type Mode = 'idle' | 'starting' | 'microphone' | 'demo';
 type Session = { context: AudioContext; source: AudioNode; analyser: AnalyserNode; worker: Worker; stream?: MediaStream; oscillator?: OscillatorNode; frame: number; samples: Float32Array<ArrayBuffer>; pending: boolean };
-type AudioOptions = { fast?: boolean; onPitch?: (pitch: Pitch | null, capturedAt: number) => void };
+type AudioOptions = { chords?: boolean; onChord?: (chord: ChordDetection | null, capturedAt: number) => void; fast?: boolean; onPitch?: (pitch: Pitch | null, capturedAt: number) => void };
 export function useDesktopAudio(gate: number, demoMidi: number, reference: number, options: AudioOptions = {}) {
+  const chords = options.chords ?? false;
+  const onChordRef = useRef(options.onChord);
+  onChordRef.current = options.onChord;
   const fast = options.fast ?? false;
   const onPitchRef = useRef(options.onPitch);
   onPitchRef.current = options.onPitch;
@@ -57,7 +61,7 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
       }
       if (token !== generation.current) { stream?.getTracks().forEach(t => t.stop()); await context.close(); return; }
       const analyser = context.createAnalyser();
-      analyser.fftSize = fast ? fastFrameSize(context.sampleRate) : 4096;
+      analyser.fftSize = chords ? Math.min(32768,Math.max(8192,2**Math.ceil(Math.log2(context.sampleRate*.17)))) : fast ? fastFrameSize(context.sampleRate) : 4096;
       let source: AudioNode;
       let oscillator: OscillatorNode | undefined;
       if (demo) {
@@ -70,13 +74,14 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
       // Keep the graph processing without playing microphone or demo audio aloud.
       const silent = context.createGain(); silent.gain.value = 0;
       analyser.connect(silent); silent.connect(context.destination);
-      worker = new Worker(new URL('./pitch.worker.ts', import.meta.url), { type: 'module' });
+      worker = chords ? new Worker(new URL('./chord.worker.ts', import.meta.url), { type: 'module' }) : new Worker(new URL('./pitch.worker.ts', import.meta.url), { type: 'module' });
       const current: Session = { context, source, analyser, worker, stream, oscillator, frame: 0, samples: new Float32Array(analyser.fftSize), pending: false };
       session.current = current;
       let frameCapturedAt = 0;
       worker.onmessage = event => {
         if (session.current !== current) return;
         current.pending = false;
+        if (chords) onChordRef.current?.(event.data.chord, frameCapturedAt);
         onPitchRef.current?.(event.data.pitch, frameCapturedAt);
         setCapturedAt(frameCapturedAt); setPitch(event.data.pitch); setComputationMs(event.data.computationMs);
       };
@@ -98,14 +103,14 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
           lastVisual = now;
           let sum = 0; for (const value of current.samples) sum += value * value;
           setLevel(Math.max(-100, 20 * Math.log10(Math.sqrt(sum / current.samples.length))));
-          if (!fast) setWave(Array.from({ length: 160 }, (_, i) => current.samples[i * 8]));
+          if (!fast && !chords) setWave(Array.from({ length: 160 }, (_, i) => current.samples[i * 8]));
           }
           if (!current.pending) {
             current.pending = true;
             // Timestamp the oldest sample so pre-target audio cannot score.
             frameCapturedAt = now - current.samples.length / current.context.sampleRate * 1000;
             const copy = current.samples.slice();
-            current.worker.postMessage({ samples: copy, sampleRate: current.context.sampleRate, gate: gateRef.current }, [copy.buffer]);
+            current.worker.postMessage({ samples: copy, sampleRate: current.context.sampleRate, gate: gateRef.current, reference }, [copy.buffer]);
           }
         }
         current.frame = requestAnimationFrame(tick);
@@ -121,7 +126,7 @@ export function useDesktopAudio(gate: number, demoMidi: number, reference: numbe
       const name = cause instanceof DOMException ? cause.name : '';
       setError(name === 'NotAllowedError' ? 'Microphone access was denied. Allow it in your browser’s site settings, then try again.' : name === 'NotFoundError' ? 'No microphone found. Connect a microphone or try the demo.' : name === 'NotReadableError' ? 'The microphone is unavailable. Close other audio apps and try again.' : cause instanceof Error ? cause.message : 'Could not start audio. Please try again.');
     }
-  }, [stop, demoMidi, reference, refreshDevices, fast]);
+  }, [stop, demoMidi, reference, refreshDevices, fast, chords]);
 
   useEffect(() => { session.current?.oscillator?.frequency.setTargetAtTime(frequencyFor(demoMidi, reference), session.current.context.currentTime, 0.03); }, [demoMidi, reference]);
   useEffect(() => {

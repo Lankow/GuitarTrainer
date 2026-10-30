@@ -1,3 +1,4 @@
+import { validChordSetup } from './practice/chordPracticeEngine.ts';
 import { validSpiderLibrary } from './practice/spiderLibrary.ts';
 import { readSelection } from './practice/noteSelection.ts';
 import { validOptions } from './optionsSchema.ts';
@@ -7,7 +8,7 @@ import { validConfig, type PracticeConfig } from './practice/engine.ts';
 import { SCALES } from './practice/scales.ts';
 import { validSpider } from './practice/spider.ts';
 import { validWalk } from './practice/spiderRoutine.ts';
-export const STORAGE_KEYS = ['guitartrainer.preferences.v1', 'guitartrainer.practice.v1', 'guitartrainer.practice.notes.v1', 'guitartrainer.scales.v1', 'guitartrainer.spider.v1', 'guitartrainer.spider.v2', 'guitartrainer.options.v1', 'guitartrainer.free.v1', 'guitartrainer.spider.library.v1'] as const;
+export const STORAGE_KEYS = ['guitartrainer.preferences.v1', 'guitartrainer.practice.v1', 'guitartrainer.practice.notes.v1', 'guitartrainer.scales.v1', 'guitartrainer.spider.v1', 'guitartrainer.spider.v2', 'guitartrainer.options.v1', 'guitartrainer.free.v1', 'guitartrainer.spider.library.v1', 'guitartrainer.chords.v1'] as const;
 export const COOKIE_KEYS = ['guitartrainer_nickname', 'guitartrainer_scores_v1'] as const;
 export const MAX_BACKUP_BYTES = 256 * 1024;
 export type Backup = { format: 'GuitarTrainer backup'; version: 1; exportedAt: string; storage: Record<string, unknown>; cookies: Record<string, string | null> };
@@ -19,8 +20,9 @@ function validEntry(key: string, value: unknown) {
   const v = value;
   switch (key) {
     case 'guitartrainer.options.v1': return validOptions(v);
+    case 'guitartrainer.chords.v1': return validChordSetup(v);
     case 'guitartrainer.free.v1': return validFree(v);
-    case 'guitartrainer.preferences.v1': return typeof v.device === 'string' && v.device.length <= 2048 && integer(v.gate,-70,-30) && [432,440,442].includes(v.reference as number) && typeof v.color === 'string' && /^#[0-9a-f]{6}$/i.test(v.color) && TUNINGS.some(t=>t.id===v.tuning);
+    case 'guitartrainer.preferences.v1': return (v.brightness === undefined || integer(v.brightness,0,100)) && typeof v.device === 'string' && v.device.length <= 2048 && integer(v.gate,-70,-30) && [432,440,442].includes(v.reference as number) && typeof v.color === 'string' && /^#[0-9a-f]{6}$/i.test(v.color) && TUNINGS.some(t=>t.id===v.tuning);
     case 'guitartrainer.practice.v1': return validConfig(v as PracticeConfig);
     case 'guitartrainer.practice.notes.v1': return !!readSelection(v);
     case 'guitartrainer.scales.v1': return (v.returnToRoot===undefined||typeof v.returnToRoot==='boolean') && validConfig(v as PracticeConfig) && integer(v.root,0,11) && SCALES.some(s=>s.id===v.scale) && ['random','ordered'].includes(v.mode as string) && integer(v.repetitions,1,100);
@@ -35,7 +37,7 @@ export function parseBackup(text: string): Backup {
   let data: unknown;
   try { data=JSON.parse(text); } catch { throw new Error('Choose a valid GuitarTrainer JSON backup.'); }
   if (!object(data) || data.format !== 'GuitarTrainer backup' || data.version !== 1 || typeof data.exportedAt !== 'string' || !Number.isFinite(Date.parse(data.exportedAt)) || !object(data.storage) || !object(data.cookies)) throw new Error('Unsupported or invalid backup format.');
-  for (const key of ['guitartrainer.options.v1', 'guitartrainer.free.v1', 'guitartrainer.spider.library.v1']) if (!Object.hasOwn(data.storage,key)) data.storage[key]=null;
+  for (const key of ['guitartrainer.options.v1', 'guitartrainer.free.v1', 'guitartrainer.spider.library.v1', 'guitartrainer.chords.v1']) if (!Object.hasOwn(data.storage,key)) data.storage[key]=null;
   if (Object.keys(data.storage).length !== STORAGE_KEYS.length || Object.keys(data.cookies).length !== COOKIE_KEYS.length) throw new Error('Backup contains missing or unsupported sections.');
   for (const key of STORAGE_KEYS) if (!Object.hasOwn(data.storage,key) || !validEntry(key,data.storage[key])) throw new Error(`Invalid settings section: ${key}.`);
   for (const key of COOKIE_KEYS) if (!Object.hasOwn(data.cookies,key)) throw new Error('Backup is missing profile or scores.');
