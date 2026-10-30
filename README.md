@@ -8,7 +8,7 @@ Future iOS delivery will reuse the same application, with its native project at 
 
 Keep browser and Android development in this repository: shared application code in `src/`, tests in `tests/`, the active Android project in `native/android/`, and documentation in `docs/`. Commit native source, resources, the Gradle wrapper, Capacitor configuration and npm lockfile. Generated web/native builds, APK/AAB files, SDK paths and signing credentials are ignored. Downloadable builds belong in CI artifacts or GitHub Releases when distribution is introduced.
 
-Use Node.js 24, JDK 21, Android Studio and Android SDK 36. After `npm ci`, run `npm run android:sync`, then `npm run android:open`. In PowerShell, build a debug APK with `.\native\android\gradlew.bat -p native/android assembleDebug`. Sync again after shared code changes. See [Android setup, storage policy and device checklist](docs/android.md) and [ADR-0014](docs/adr/0014-android-capacitor.md). Release signing and Google Play publication are not configured yet.
+Use Node.js 24, JDK 21, Android Studio and Android SDK 36. After `npm ci`, run `npm run android:sync`, then `npm run android:open`. In PowerShell, build a debug APK with `.\native\android\gradlew.bat -p native/android assembleDebug`. Sync again after shared code changes. See [Android setup, storage policy and device checklist](docs/android.md) and [ADR-0014](docs/adr/0014-android-capacitor.md). Release signing and Google Play publication are not configured yet. The [Android branding guide](docs/android.md#launcher-branding-2026-10-30) explains regenerating launcher resources from the shared logo geometry.
 
 ## Android early alpha
 

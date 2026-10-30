@@ -1,3 +1,4 @@
+import { BrandMark } from './BrandMark';
 import { ChordPractice } from './practice/ChordPractice';
 import { GuideIcon } from './GuideIcon';
 import { PracticeHeader } from './practice/PracticeHeader';
@@ -53,9 +54,9 @@ export default function App() {
   const tuningText = !active ? 'Your next note starts here' : !note ? 'Pluck one string and let it ring' : inTune ? 'Right on pitch' : note.cents < 0 ? 'A little flat · tune up' : 'A little sharp · tune down';
   const wavePath = audio.wave.map((value, i) => `${i ? 'L' : 'M'}${i * 5},${45 - value * 100}`).join(' ');
   return <div className="app-shell" style={themeVariables(preferences.color, preferences.brightness) as CSSProperties}>
-    {!profile.nickname ? <main className="welcome"><section className="panel welcome-card"><div className="eyebrow">{tr("GUITARTRAINER · YOUR DAILY PRACTICE SPACE")}</div><h1>{tr("Make yourself at home")}<span>.</span></h1><p>{tr("Create your local profile to begin.")}</p><LanguageSettings /><ProfileForm onSave={profile.save} /></section></main> : <>
+    {!profile.nickname ? <main className="welcome"><section className="panel welcome-card"><div className="eyebrow welcome-brand"><BrandMark size={36} /><span>{tr("GUITARTRAINER · YOUR DAILY PRACTICE SPACE")}</span></div><h1>{tr("Make yourself at home")}<span>.</span></h1><p>{tr("Create your local profile to begin.")}</p><LanguageSettings /><ProfileForm onSave={profile.save} /></section></main> : <>
     <aside ref={sidebar} className={`sidebar ${menuOpen ? 'menu-open' : ''}`}><div className="sidebar-header">
-      <a className="brand" href="#" onClick={() => navigate('studio')} aria-label={tr("GuitarTrainer home")}><span className="brand-icon"><Icon name="wave" /></span><span>{tr("Guitar")}<span className="brand-light">{tr("Trainer")}</span><small>{tr("YOUR DAILY PRACTICE SPACE")}</small></span></a>
+      <a className="brand" href="#" onClick={() => navigate('studio')} aria-label={tr("GuitarTrainer home")}><BrandMark /><span>{tr("Guitar")}<span className="brand-light">{tr("Trainer")}</span><small>{tr("YOUR DAILY PRACTICE SPACE")}</small></span></a>
       <button ref={menuButton} type="button" className="mobile-menu-button" aria-label={menuOpen ? tr("Close navigation") : tr("Open navigation")} aria-expanded={menuOpen} aria-controls="workspace-navigation" onClick={() => setMenuOpen(open => !open)}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d={menuOpen ? 'M6 6l12 12M6 18 18 6' : 'M4 6h16M4 12h16M4 18h16'}/></svg><span>{tr("Menu")}</span></button></div>
       <div id="workspace-navigation" className="workspace-navigation"><div className="nav-label">{tr("PRACTICE")}</div>
       <nav aria-label={tr("Practice")}><button className={`nav-item ${page === 'studio' ? 'nav-active' : ''}`} aria-current={page === 'studio' ? 'page' : undefined} onClick={() => navigate('studio')}><Icon name="mic" />{tr("Tuning Studio")}</button>

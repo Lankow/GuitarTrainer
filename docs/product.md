@@ -263,3 +263,13 @@ Limitations: clean, sustained, complete chords in standard tuning are recommende
 ## Appearance brightness (2026-10-30)
 
 Settings → Appearance includes a 0–100% Brightness slider with an immediate preview. Zero preserves the original dark appearance; higher values lighten the shared background, panels, borders and muted text while preserving the chosen accent color. This controls the app theme, not device screen brightness. The value is saved in local preferences and included in settings backups. Older preferences/backups without brightness default to zero; imports reject values outside the integer range.
+
+
+## Shared app branding (2026-10-30)
+A transparent inline SVG guitar-pick/fretboard mark appears beside the GuitarTrainer name in the navigation header and first-launch welcome card. src/BrandMark.tsx shares the geometry across both locations. Its fill and strokes use currentColor, with CSS sourcing the current accent theme, so preset/custom color changes apply immediately. There is no image background, fixed orange color or surrounding tile. The SVG is decorative and hidden from assistive technology because adjacent text identifies the app. This supersedes the initial PNG proposal; the unused raster asset is removed. Android launcher icons now use the same approved geometry; splash screens and future iOS icon assets remain unchanged. The published alpha APK is unchanged and must be rebuilt/released separately to receive this branding.
+
+Logo hover/focus: removed the legacy tile background, border color and rectangular shadow from the brand SVG. Hover retains the small rotation/scale effect; the logo stays transparent, and the link retains its keyboard focus outline.
+
+Logo geometry refinement: traced the original proposal more closely with three transparent fretboard channels opening through the crown, two accent-colored rails continuing through the circular sound hole, and the broader rounded pick shoulders. SVG luminance masking preserves actual transparency and theme coloring; unique per-instance mask IDs support both branding locations.
+
+Android launcher branding (2026-10-30): adaptive foreground and Android monochrome layer use the approved guitar-pick geometry, with orange foreground and charcoal background for the regular launcher icon. Legacy square/round PNGs cover mdpi through xxxhdpi. Launcher theming follows supported Android launcher/system settings, independently of the in-app accent. The logo sits within the adaptive icon safe zone. Launcher appearance on physical devices remains unverified.
