@@ -59,6 +59,12 @@ Record device model, Android version, WebView version and date for each run. Int
 
 ## Verification record
 
+### CI SDK setup failure (2026-10-30)
+
+Android runs for both the alpha and the later main commit failed in android-actions/setup-android@v3 before npm install or Gradle. The action's default packages included the retired Android SDK `tools` package; sdkmanager reported `Failed to find package 'tools'`. Desktop checks and GitHub Pages deployment succeeded for main commit 92c701d, independently of this Android setup failure. The installed alpha was built and verified locally, so these CI failures do not invalidate that local build or replace its release asset.
+
+The Android workflow now explicitly requests platform-tools, platforms;android-36 and build-tools;36.0.0, avoiding the action's obsolete default while retaining JDK 21 and SDK 36. License text logging is disabled to keep failures readable; license acceptance behavior is unchanged. See the [setup action's package documentation](https://github.com/android-actions/setup-android#additional-packages). A fresh GitHub run is required to verify the Linux runner and artifact upload; results follow after execution. Historical failed runs remain failed; rerunning their old workflow revision would repeat the original setup.
+
 Local checks on 2026-10-28 passed: 94 tests (including two lifecycle tests), npm run typecheck, npm run build, npm run android:sync, and Gradle assembleDebug with JDK 21 / Android SDK 36. The final APK was rebuilt after syncing the lifecycle changes. Gradle reports template flatDir repository warnings. Initial sandbox attempts blocked Node subprocesses and Gradle cache access; the completed checks ran with approved access. These are local build results, not physical-device measurements. The new GitHub Actions workflow has not run remotely yet. No physical Android or guitar result has been recorded for this prototype.
 
 
