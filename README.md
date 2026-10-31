@@ -12,7 +12,7 @@ Use Node.js 24, JDK 21, Android Studio and Android SDK 36. After `npm ci`, run `
 
 ## Android early alpha
 
-The first early alpha is version `0.1.0-alpha.1`, distributed as a debug-signed APK through [GitHub prereleases](https://github.com/Lankow/GuitarTrainer/releases). Read the [installation instructions and limitations](docs/releases/v0.1.0-alpha.1.md). Physical Android/guitar testing is pending; this is not a Google Play release.
+The current early alpha is version `0.1.0-alpha.1` (Android build 2, refreshed 2026-10-31), distributed as a debug-signed APK through [GitHub prereleases](https://github.com/Lankow/GuitarTrainer/releases). Read the [installation instructions and limitations](docs/releases/v0.1.0-alpha.1.md). Physical Android/guitar testing is pending; this is not a Google Play release.
 
 ## Run locally
 
